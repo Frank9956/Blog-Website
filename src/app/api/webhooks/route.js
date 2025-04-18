@@ -1,26 +1,28 @@
-import { verifyWebhook } from '@clerk/nextjs/webhooks'
+import { verifyWebhook } from '@clerk/nextjs/webhooks';
 
 export async function POST(req) {
   try {
-    const evt = await verifyWebhook(req)
+    const evt = await verifyWebhook(req, {
+      secret: process.env.CLERK_WEBHOOK_SECRET, // 🔑 Add this
+    });
 
-    // Do something with payload
-    // For this guide, log payload to console
-    const { id } = evt.data
-    const eventType = evt.type
-    console.log(`Received webhook with ID ${id} and event type of ${eventType}`)
-    console.log('Webhook payload:', evt.data)
+    const { id } = evt.data;
+    const eventType = evt.type;
 
-    if (evt.type === 'user.created') {
-      console.log('userId:', evt.data.id)
+    console.log(`✅ Webhook received with ID ${id} and event type: ${eventType}`);
+    console.log('📦 Webhook payload:', evt.data);
+
+    if (eventType === 'user.created') {
+      console.log('👤 New user created:', evt.data.id);
     }
 
-    if (evt.type === 'user.updated') {
-      console.log('user is updated:', evt.data.id)
+    if (eventType === 'user.updated') {
+      console.log('🔄 User updated:', evt.data.id);
     }
-    return new Response('Webhook received', { status: 200 })
+
+    return new Response('Webhook received', { status: 200 });
   } catch (err) {
-    console.error('Error verifying webhook:', err)
-    return new Response('Error verifying webhook', { status: 400 })
+    console.error('❌ Error verifying webhook:', err);
+    return new Response('Error verifying webhook', { status: 400 });
   }
 }
