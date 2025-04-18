@@ -3,14 +3,14 @@ import { verifyWebhook } from '@clerk/nextjs/webhooks';
 export async function POST(req) {
   try {
     const evt = await verifyWebhook(req, {
-      secret: process.env.CLERK_WEBHOOK_SECRET, // 🔑 Add this
+      secret: process.env.CLERK_WEBHOOK_SECRET, 
     });
 
     const { id } = evt.data;
     const eventType = evt.type;
 
     console.log(`✅ Webhook received with ID ${id} and event type: ${eventType}`);
-    console.log('📦 Webhook payload:', evt.data);
+    console.log('📦 Webhook payload:', body);
 
     if (eventType === 'user.created') {
       console.log('👤 New user created:', evt.data.id);
