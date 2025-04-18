@@ -1,26 +1,22 @@
-// route.js or route.ts (if using TypeScript)
-import { Webhook } from '@clerk/backend';
-
-const webhookHandler = new Webhook({ secret: process.env.CLERK_WEBHOOK_SIGNING_SECRET });
+import { verifyWebhook } from '@clerk/nextjs/webhooks';
 
 export async function POST(req) {
   try {
-    const payload = await req.text(); // read raw body
-    const signature = req.headers.get('clerk-signature'); // read signature header
-
-    const evt = webhookHandler.verifySignature({
-      payload,
-      headers: { 'clerk-signature': signature },
+    const evt = await verifyWebhook(req, {
+      secret: process.env.CLERK_WEBHOOK_SIGNING_SECRET, 
     });
 
-    console.log('✅ Webhook verified:', evt.type);
-    console.log('📦 Payload:', evt.data);
+    const { id } = evt.data;
+    const eventType = evt.type;
 
-    if (evt.type === 'user.created') {
+    console.log(`✅ Webhook received with ID ${id} and event type: ${eventType}`);
+    console.log('📦 Webhook payload:', body);
+
+    if (eventType === 'user.created') {
       console.log('👤 New user created:', evt.data.id);
     }
 
-    if (evt.type === 'user.updated') {
+    if (eventType === 'user.updated') {
       console.log('🔄 User updated:', evt.data.id);
     }
 
