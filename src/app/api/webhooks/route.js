@@ -12,13 +12,11 @@ export async function POST(req) {
     );
   }
 
-  // Extract headers from the incoming request
   const headerPayload = headers();
   const svix_id = headerPayload.get('svix-id');
   const svix_timestamp = headerPayload.get('svix-timestamp');
   const svix_signature = headerPayload.get('svix-signature');
 
-  // Ensure required headers are present
   if (!svix_id || !svix_timestamp || !svix_signature) {
     return new Response('Error: Missing svix headers', { status: 400 });
   }
@@ -26,12 +24,10 @@ export async function POST(req) {
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
-  // Create a new Svix instance with your signing secret
   const wh = new Webhook(CLERK_WEBHOOK_SIGNING_SECRET);
 
   let evt;
 
-  // Verify the webhook payload with the headers
   try {
     evt = wh.verify(body, {
       'svix-id': svix_id,
@@ -48,7 +44,6 @@ export async function POST(req) {
   console.log(`Webhook with ID: ${id} and Event Type: ${eventType}`);
   console.log('Webhook body:', body);
 
-  // Handle user creation or update
   if (eventType === 'user.created' || eventType === 'user.updated') {
     const { first_name, last_name, image_url, email_addresses, username } = evt?.data;
     try {
@@ -58,39 +53,43 @@ export async function POST(req) {
         last_name,
         image_url,
         email_addresses,
-        username // Including the username
+        username
       );
       if (user && eventType === 'user.created') {
         try {
-          // Update Clerk user metadata
-          await clerkClient.users.updateUserMetadata(id, {
-            publicMetadata: {
-              userMongoId: user._id,
-              isAdmin: user.isAdmin,
-            },
-          });
+          // Ensure clerkClient is available
+          if (clerkClient && clerkClient.users) {
+            console.log('Updating user metadata for ID:', id);
+            await clerkClient.users.updateUserMetadata(id, {
+              publicMetadata: {
+                userMongoId: user._id,
+                isAdmin: user.isAdmin,
+              },
+            });
+            console.log('User metadata updated successfully');
+          } else {
+            console.error('clerkClient or clerkClient.users is undefined');
+          }
         } catch (error) {
-          console.log('Error updating user metadata:', error);
+          console.error('Error updating user metadata:', error);
           return new Response('Error updating user metadata', { status: 500 });
         }
       }
     } catch (error) {
-      console.log('Error creating or updating user:', error);
+      console.error('Error creating or updating user:', error);
       return new Response('Error creating or updating user', { status: 500 });
     }
   }
 
-  // Handle user deletion
   if (eventType === 'user.deleted') {
     const { id } = evt?.data;
     try {
       await deleteUser(id);
     } catch (error) {
-      console.log('Error deleting user:', error);
+      console.error('Error deleting user:', error);
       return new Response('Error deleting user', { status: 500 });
     }
   }
 
-  // Respond with a successful status
   return new Response('', { status: 200 });
 }
