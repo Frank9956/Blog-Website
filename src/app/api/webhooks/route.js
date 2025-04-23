@@ -12,22 +12,26 @@ export async function POST(req) {
     );
   }
 
+  // Extract headers from the incoming request
   const headerPayload = headers();
   const svix_id = headerPayload.get('svix-id');
   const svix_timestamp = headerPayload.get('svix-timestamp');
   const svix_signature = headerPayload.get('svix-signature');
 
+  // Ensure required headers are present
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response('Error occured -- no svix headers', { status: 400 });
+    return new Response('Error: Missing svix headers', { status: 400 });
   }
 
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
+  // Create a new Svix instance with your signing secret
   const wh = new Webhook(CLERK_WEBHOOK_SIGNING_SECRET);
 
   let evt;
 
+  // Verify the webhook payload with the headers
   try {
     evt = wh.verify(body, {
       'svix-id': svix_id,
@@ -36,16 +40,17 @@ export async function POST(req) {
     });
   } catch (err) {
     console.error('Error verifying webhook:', err);
-    return new Response('Error occured', { status: 400 });
+    return new Response('Error verifying webhook', { status: 400 });
   }
 
   const { id } = evt?.data;
   const eventType = evt?.type;
-  console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
+  console.log(`Webhook with ID: ${id} and Event Type: ${eventType}`);
   console.log('Webhook body:', body);
 
+  // Handle user creation or update
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const { id, first_name, last_name, image_url, email_addresses, username} = evt?.data;
+    const { first_name, last_name, image_url, email_addresses, username } = evt?.data;
     try {
       const user = await createOrUpdateUser(
         id,
@@ -53,10 +58,11 @@ export async function POST(req) {
         last_name,
         image_url,
         email_addresses,
-        username
+        username // Including the username
       );
       if (user && eventType === 'user.created') {
         try {
+          // Update Clerk user metadata
           await clerkClient.users.updateUserMetadata(id, {
             publicMetadata: {
               userMongoId: user._id,
@@ -65,23 +71,26 @@ export async function POST(req) {
           });
         } catch (error) {
           console.log('Error updating user metadata:', error);
+          return new Response('Error updating user metadata', { status: 500 });
         }
       }
     } catch (error) {
       console.log('Error creating or updating user:', error);
-      return new Response('Error occured', { status: 400 });
+      return new Response('Error creating or updating user', { status: 500 });
     }
   }
 
+  // Handle user deletion
   if (eventType === 'user.deleted') {
     const { id } = evt?.data;
     try {
       await deleteUser(id);
     } catch (error) {
       console.log('Error deleting user:', error);
-      return new Response('Error occured', { status: 400 });
+      return new Response('Error deleting user', { status: 500 });
     }
   }
 
+  // Respond with a successful status
   return new Response('', { status: 200 });
 }
