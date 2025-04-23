@@ -2,10 +2,10 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Header from './components/Header';
 import { ThemeProvider } from 'next-themes';
-import ThemeCom from './components/themeCom';
+import ThemeCom from './components/ThemeCom';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeModeScript } from 'flowbite-react';
-// import Footer from './components/Footer';
+import Footer from './components/Footer';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
