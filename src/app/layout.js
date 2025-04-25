@@ -37,7 +37,7 @@ export default function RootLayout({ children }) {
             <ThemeCom>
               <Header />
               {children}
-              <Footer />
+              <Footer/>
             </ThemeCom>
           </ThemeProvider>
         </body>
