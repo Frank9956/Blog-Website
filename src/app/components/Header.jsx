@@ -42,7 +42,7 @@ export default function Header() {
           Fever
         </Link>
 
-        {/* Navigation Links
+        {/* Navigation Links */}
         <nav className="hidden md:flex items-center gap-4 font-medium text-sm">
           <Link href="/" className={`${path === '/' ? 'font-bold underline' : 'hover:underline'}`}>
             Home
@@ -59,7 +59,7 @@ export default function Header() {
           <Link href="/about" className={`${path === '/about' ? 'font-bold underline' : 'hover:underline'}`}>
             ABOUT Us
           </Link>
-        </nav> */}
+        </nav>
 
         {/* Search & Account Section */}
         <div className="flex items-center gap-2 ml-auto">
