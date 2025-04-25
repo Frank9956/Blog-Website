@@ -6,7 +6,7 @@ import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { useTheme } from 'next-themes';
 import { Moon, Sun, Search, Menu } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const path = usePathname();
@@ -32,10 +32,10 @@ export default function Header() {
   }, [searchParams]);
 
   return (
-    <header className="border-b px-4 py-2 flex items-center justify-between">
+    <header className="bg-black border-b border-border px-4 py-2 flex items-center justify-between text-white">
       {/* Logo/Title */}
       <Link href="/" className="text-xl font-bold">
-        <span className="px-2 py-1 bg-gradient-to-r from-blue-500 via-orange-500 to-pink-500 rounded-lg text-white">
+        <span className="px-2 py-1 bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 rounded-lg text-white">
           Entrance&apos;s
         </span>{' '}
         Fever
@@ -44,12 +44,13 @@ export default function Header() {
       {/* Search Bar (desktop) */}
       <form onSubmit={handleSubmit} className="hidden lg:flex items-center space-x-2">
         <Input
+          className="bg-background text-white border-muted"
           type="text"
           placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button type="submit" variant="outline" size="icon">
+        <Button type="submit" variant="outline" size="icon" className="text-white border-white">
           <Search className="w-4 h-4" />
         </Button>
       </form>
@@ -60,6 +61,7 @@ export default function Header() {
         <Button
           variant="ghost"
           size="icon"
+          className="text-white hover:bg-muted"
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
         >
           {theme === 'light' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -71,35 +73,26 @@ export default function Header() {
         </SignedIn>
         <SignedOut>
           <Link href="/sign-in">
-            <Button variant="outline">Sign In</Button>
+            <Button variant="outline" className="text-white border-white">Sign In</Button>
           </Link>
         </SignedOut>
 
         {/* Hamburger Menu */}
-        <Button variant="ghost" className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
+        <Button variant="ghost" className="md:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
           <Menu />
         </Button>
       </div>
 
       {/* Mobile Nav Links */}
       {isOpen && (
-        <nav className="absolute top-16 left-0 w-full bg-background border-t p-4 flex flex-col gap-2 md:hidden">
-          <Link
-            href="/"
-            className={`hover:underline ${path === '/' && 'font-semibold'}`}
-          >
+        <nav className="absolute top-16 left-0 w-full bg-black border-t border-border p-4 flex flex-col gap-2 md:hidden text-white">
+          <Link href="/" className={`hover:underline ${path === '/' && 'font-semibold'}`}>
             Home
           </Link>
-          <Link
-            href="/about"
-            className={`hover:underline ${path === '/about' && 'font-semibold'}`}
-          >
+          <Link href="/about" className={`hover:underline ${path === '/about' && 'font-semibold'}`}>
             About
           </Link>
-          <Link
-            href="/projects"
-            className={`hover:underline ${path === '/projects' && 'font-semibold'}`}
-          >
+          <Link href="/projects" className={`hover:underline ${path === '/projects' && 'font-semibold'}`}>
             Projects
           </Link>
         </nav>
