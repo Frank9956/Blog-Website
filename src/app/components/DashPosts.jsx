@@ -1,15 +1,20 @@
 'use client';
 
-import { Button, Modal, Table } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 export default function DashPosts() {
   const { user } = useUser();
-  console.log('user', user);
-
   const [userPosts, setUserPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState('');
@@ -27,8 +32,6 @@ export default function DashPosts() {
           }),
         });
         const data = await res.json();
-        console.log(data);
-
         if (res.ok) {
           setUserPosts(data.posts);
         }
@@ -36,6 +39,7 @@ export default function DashPosts() {
         console.log(error.message);
       }
     };
+
     if (user?.publicMetadata?.isAdmin) {
       fetchPosts();
     }
@@ -60,7 +64,7 @@ export default function DashPosts() {
           (post) => post._id !== postIdToDelete
         );
         setUserPosts(newPosts);
-        setPostIdToDelete(''); // Reset postIdToDelete after deletion
+        setPostIdToDelete('');
       } else {
         console.log(data.message);
       }
@@ -71,103 +75,98 @@ export default function DashPosts() {
 
   if (!user?.publicMetadata?.isAdmin) {
     return (
-      <div className='flex flex-col items-center justify-center h-full w-full py-7'>
-        <h1 className='text-2xl font-semibold'>You are not an admin!</h1>
+      <div className="flex flex-col items-center justify-center h-full w-full py-7">
+        <h1 className="text-2xl font-semibold">You are not an admin!</h1>
       </div>
     );
   }
 
   return (
-    <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
+    <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
       {user?.publicMetadata?.isAdmin && userPosts.length > 0 ? (
-        <>
-          <Table hoverable className='shadow-md'>
-            <Table.Head>
-              <Table.HeadCell>Date updated</Table.HeadCell>
-              <Table.HeadCell>Post image</Table.HeadCell>
-              <Table.HeadCell>Post title</Table.HeadCell>
-              <Table.HeadCell>Category</Table.HeadCell>
-              <Table.HeadCell>Delete</Table.HeadCell>
-              <Table.HeadCell>
-                <span>Edit</span>
-              </Table.HeadCell>
-            </Table.Head>
-            {userPosts &&
-              userPosts.map((post) => (
-                <Table.Body className='divide-y' key={post._id}>
-                  <Table.Row className='bg-white dark:border-gray-700 dark:bg-gray-800'>
-                    <Table.Cell>
-                      {new Date(post.updatedAt).toLocaleDateString()}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Link href={`/post/${post.slug}`}>
-                        <img
-                          src={post.image}
-                          alt={post.title}
-                          className='w-20 h-10 object-cover bg-gray-500'
-                        />
-                      </Link>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Link
-                        className='font-medium text-gray-900 dark:text-white'
-                        href={`/post/${post.slug}`}
-                      >
-                        {post.title}
-                      </Link>
-                    </Table.Cell>
-                    <Table.Cell>{post.category}</Table.Cell>
-                    <Table.Cell>
-                      <span
-                        className='font-medium text-red-500 hover:underline cursor-pointer'
-                        onClick={() => {
-                          setShowModal(true);
-                          setPostIdToDelete(post._id);
-                        }}
-                      >
-                        Delete
-                      </span>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Link
-                        className='text-teal-500 hover:underline'
-                        href={`/dashboard/update-post/${post._id}`}
-                      >
-                        <span>Edit</span>
-                      </Link>
-                    </Table.Cell>
-                  </Table.Row>
-                </Table.Body>
-              ))}
-          </Table>
-        </>
+        <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-700 shadow-md">
+          <thead className="bg-gray-50 dark:bg-gray-800">
+            <tr>
+              <th className="border px-4 py-2 text-left">Date Updated</th>
+              <th className="border px-4 py-2 text-left">Post Image</th>
+              <th className="border px-4 py-2 text-left">Post Title</th>
+              <th className="border px-4 py-2 text-left">Category</th>
+              <th className="border px-4 py-2 text-left">Delete</th>
+              <th className="border px-4 py-2 text-left">Edit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userPosts.map((post) => (
+              <tr
+                key={post._id}
+                className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <td className="border px-4 py-2">
+                  {new Date(post.updatedAt).toLocaleDateString()}
+                </td>
+                <td className="border px-4 py-2">
+                  <Link href={`/post/${post.slug}`}>
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-20 h-10 object-cover bg-gray-500"
+                    />
+                  </Link>
+                </td>
+                <td className="border px-4 py-2">
+                  <Link
+                    className="font-medium text-gray-900 dark:text-white"
+                    href={`/post/${post.slug}`}
+                  >
+                    {post.title}
+                  </Link>
+                </td>
+                <td className="border px-4 py-2">{post.category}</td>
+                <td className="border px-4 py-2">
+                  <span
+                    className="font-medium text-red-500 hover:underline cursor-pointer"
+                    onClick={() => {
+                      setShowModal(true);
+                      setPostIdToDelete(post._id);
+                    }}
+                  >
+                    Delete
+                  </span>
+                </td>
+                <td className="border px-4 py-2">
+                  <Link
+                    className="text-teal-500 hover:underline"
+                    href={`/dashboard/update-post/${post._id}`}
+                  >
+                    Edit
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         <p>You have no posts yet!</p>
       )}
-      <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        popup
-        size='md'
-      >
-        <Modal.Header />
-        <Modal.Body>
-          <div className='text-center'>
-            <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
-            <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
+
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex flex-col items-center gap-2">
+              <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200" />
               Are you sure you want to delete this post?
-            </h3>
-            <div className='flex justify-center gap-4'>
-              <Button color='failure' onClick={handleDeletePost}>
-                Yes, I&apos;m sure
-              </Button>
-              <Button color='gray' onClick={() => setShowModal(false)}>
-                No, cancel
-              </Button>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+            </DialogTitle>
+          </DialogHeader>
+          <DialogFooter className="flex justify-center gap-4 pt-4">
+            <Button variant="destructive" onClick={handleDeletePost}>
+              Yes, I&apos;m sure
+            </Button>
+            <Button variant="outline" onClick={() => setShowModal(false)}>
+              No, cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -6,9 +6,17 @@ import {
   HiDocumentText,
   HiOutlineUserGroup,
 } from 'react-icons/hi';
-import { Button, Table } from 'flowbite-react'; // Ensure this import is correct
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 
 export default function DashboardComp() {
   const [users, setUsers] = useState([]);
@@ -19,9 +27,8 @@ export default function DashboardComp() {
   const [lastMonthPosts, setLastMonthPosts] = useState(0);
   const { user } = useUser();
 
-  const [mounted, setMounted] = useState(false); // Track if component is mounted
+  const [mounted, setMounted] = useState(false);
 
-  // Set mounted to true after component is mounted
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -75,14 +82,12 @@ export default function DashboardComp() {
     }
   }, [user]);
 
-  if (!mounted) return null; // Delay rendering until after the component is mounted
+  if (!mounted) return null;
 
   return (
     <div className="p-3 md:mx-auto">
-      {/* Stats Cards */}
       <div className="flex-wrap flex gap-4 justify-center">
-        {/* Users Card */}
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-md shadow-md">
+        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-2xl shadow-md">
           <div className="flex justify-between">
             <div>
               <h3 className="text-gray-500 text-md uppercase">Total Users</h3>
@@ -99,8 +104,7 @@ export default function DashboardComp() {
           </div>
         </div>
 
-        {/* Posts Card */}
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-md shadow-md">
+        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-2xl shadow-md">
           <div className="flex justify-between">
             <div>
               <h3 className="text-gray-500 text-md uppercase">Total Posts</h3>
@@ -118,71 +122,68 @@ export default function DashboardComp() {
         </div>
       </div>
 
-      {/* Tables */}
       <div className="flex flex-wrap gap-4 py-3 mx-auto justify-center">
-        {/* Users Table */}
-        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
+        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-2xl dark:bg-gray-800">
           <div className="flex justify-between p-3 text-sm font-semibold">
             <h1 className="text-center p-2">Recent users</h1>
             <Link href="/dashboard?tab=users" passHref>
-              <Button outline color="primary">
-                See all
-              </Button>
+              <Button variant="outline">See all</Button>
             </Link>
           </div>
-          <Table hoverable>
-            <Table.Head>
-              <Table.HeadCell>User image</Table.HeadCell>
-              <Table.HeadCell>Username</Table.HeadCell>
-            </Table.Head>
-            <Table.Body className="divide-y">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User image</TableHead>
+                <TableHead>Username</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {users.map((user) => (
-                <Table.Row key={user._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell>
+                <TableRow key={user._id}>
+                  <TableCell>
                     <img
                       src={user.profilePicture}
                       alt="user"
                       className="w-10 h-10 rounded-full bg-gray-500"
                     />
-                  </Table.Cell>
-                  <Table.Cell>{user.username}</Table.Cell>
-                </Table.Row>
+                  </TableCell>
+                  <TableCell>{user.username}</TableCell>
+                </TableRow>
               ))}
-            </Table.Body>
+            </TableBody>
           </Table>
         </div>
 
-        {/* Posts Table */}
-        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
+        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-2xl dark:bg-gray-800">
           <div className="flex justify-between p-3 text-sm font-semibold">
             <h1 className="text-center p-2">Recent posts</h1>
             <Link href="/dashboard?tab=posts" passHref>
-              <Button outline color="primary">
-                See all
-              </Button>
+              <Button variant="outline">See all</Button>
             </Link>
           </div>
-          <Table hoverable>
-            <Table.Head>
-              <Table.HeadCell>Post image</Table.HeadCell>
-              <Table.HeadCell>Post Title</Table.HeadCell>
-              <Table.HeadCell>Category</Table.HeadCell>
-            </Table.Head>
-            <Table.Body className="divide-y">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Post image</TableHead>
+                <TableHead>Post Title</TableHead>
+                <TableHead>Category</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {posts.map((post) => (
-                <Table.Row key={post._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell>
+                <TableRow key={post._id}>
+                  <TableCell>
                     <img
                       src={post.image}
                       alt="post"
                       className="w-14 h-10 rounded-md bg-gray-500"
                     />
-                  </Table.Cell>
-                  <Table.Cell className="w-96">{post.title}</Table.Cell>
-                  <Table.Cell className="w-5">{post.category}</Table.Cell>
-                </Table.Row>
+                  </TableCell>
+                  <TableCell className="w-96">{post.title}</TableCell>
+                  <TableCell className="w-5">{post.category}</TableCell>
+                </TableRow>
               ))}
-            </Table.Body>
+            </TableBody>
           </Table>
         </div>
       </div>
