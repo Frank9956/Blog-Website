@@ -23,7 +23,7 @@ export default function Home() {
               key={category.name}
               className={`flex items-center gap-2 text-left font-bold hover:underline hover:text-black dark:hover:text-white transition ${index === 0 ? 'mt-4' : ''}`} // Fixed className syntax here
             >
-              <Link href={`/search?category=${category.name.toLowerCase()}&searchTerm=CUET++2025`} className="flex items-center gap-2" passHref>
+              <Link href={`/search?category=${category.name.toLowerCase()}`} className="flex items-center gap-2" passHref>
                 {/* Category icon on the left */}
                 <span className="text-lg">{category.icon}</span>
                 {/* Category name */}
