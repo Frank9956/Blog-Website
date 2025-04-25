@@ -15,8 +15,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen bg-white dark:bg-black text-black dark:text-white">
       {/* Sidebar */}
-      <aside className="w-[20%] hidden md:block sticky top-0 h-screen border-r border-gray-300 dark:border-gray-700 p-6 pl-8"> {/* Added padding-left (pl-8) */}
-        {/* Categories in a vertical line */}
+      <aside className="w-[20%] hidden md:block sticky top-0 h-screen border-r border-gray-300 dark:border-gray-700 p-6 pl-8">
         <ul className="space-y-4">
           {categories.map((category, index) => (
             <li
@@ -24,9 +23,7 @@ export default function Home() {
               className={`flex items-center gap-2 text-left font-bold hover:underline hover:text-black dark:hover:text-white transition ${index === 0 ? 'mt-4' : ''}`}
             >
               <Link href={`/search?category=${category.name.toLowerCase()}&searchTerm=CUET++2025`} className="flex items-center gap-2" passHref>
-                {/* Category icon on the left */}
                 <span className="text-lg">{category.icon}</span>
-                {/* Category name */}
                 <span>{category.name}</span>
               </Link>
             </li>
@@ -42,8 +39,10 @@ export default function Home() {
             Browse the newest posts, no matter the category.
           </p>
 
-          {/* Pass no category, so RecentPosts will display all posts */}
-          <RecentPosts limit={9} />
+          {/* Updated flex container for the posts */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <RecentPosts limit={9} />
+          </div>
 
           <div className="text-center mt-6">
             <Link href="/search" className="underline hover:text-black dark:hover:text-white">
