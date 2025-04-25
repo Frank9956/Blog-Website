@@ -1,6 +1,11 @@
 'use client';
 
-import { Sidebar } from 'flowbite-react';
+import {
+  Sidebar,
+  SidebarItem,
+  SidebarItems,
+  SidebarItemGroup,
+} from 'flowbite-react';
 import {
   HiUser,
   HiArrowSmRight,
@@ -10,78 +15,80 @@ import {
 } from 'react-icons/hi';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { SignOutButton } from '@clerk/nextjs';
-import { useUser } from '@clerk/nextjs';
+import { SignOutButton, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
+
 export default function DashSidebar() {
   const [tab, setTab] = useState('');
   const searchParams = useSearchParams();
   const { user, isSignedIn } = useUser();
+
   useEffect(() => {
-    const urlParams = new URLSearchParams(searchParams);
-    const tabFromUrl = urlParams.get('tab');
-    if (tabFromUrl) {
-      setTab(tabFromUrl);
-    }
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl) setTab(tabFromUrl);
   }, [searchParams]);
 
-  if (!isSignedIn) {
-    return null;
-  }
+  if (!isSignedIn) return null;
+
+  const isAdmin = user?.publicMetadata?.isAdmin;
 
   return (
-    <Sidebar className='w-full md:w-56'>
-      <Sidebar.Items>
-        <Sidebar.ItemGroup className='flex flex-col gap-1'>
-          {user?.publicMetadata?.isAdmin && (
-            <Link href='/dashboard?tab=dash'>
-              <Sidebar.Item
-                active={tab === 'dash' || !tab}
+    <Sidebar className="w-full md:w-56">
+      <SidebarItems>
+        <SidebarItemGroup>
+          {isAdmin && (
+            <Link href="/dashboard?tab=dash">
+              <SidebarItem
                 icon={HiChartPie}
-                as='div'
+                active={!tab || tab === 'dash'}
+                as="div"
               >
                 Dashboard
-              </Sidebar.Item>
+              </SidebarItem>
             </Link>
           )}
-          <Link href='/dashboard?tab=profile'>
-            <Sidebar.Item
-              active={tab === 'profile'}
+
+          <Link href="/dashboard?tab=profile">
+            <SidebarItem
               icon={HiUser}
-              label={user?.publicMetadata?.isAdmin ? 'Admin' : 'User'}
-              labelColor='dark'
-              as='div'
+              active={tab === 'profile'}
+              label={isAdmin ? 'Admin' : 'User'}
+              labelColor="dark"
+              as="div"
             >
               Profile
-            </Sidebar.Item>
+            </SidebarItem>
           </Link>
-          {user?.publicMetadata?.isAdmin && (
-            <Link href='/dashboard?tab=posts'>
-              <Sidebar.Item
-                active={tab === 'posts'}
+
+          {isAdmin && (
+            <Link href="/dashboard?tab=posts">
+              <SidebarItem
                 icon={HiDocumentText}
-                as='div'
+                active={tab === 'posts'}
+                as="div"
               >
                 Posts
-              </Sidebar.Item>
+              </SidebarItem>
             </Link>
           )}
-          {user?.publicMetadata?.isAdmin && (
-            <Link href='/dashboard?tab=users'>
-              <Sidebar.Item
-                active={tab === 'users'}
+
+          {isAdmin && (
+            <Link href="/dashboard?tab=users">
+              <SidebarItem
                 icon={HiOutlineUserGroup}
-                as='div'
+                active={tab === 'users'}
+                as="div"
               >
                 Users
-              </Sidebar.Item>
+              </SidebarItem>
             </Link>
           )}
-          <Sidebar.Item icon={HiArrowSmRight} className='cursor-pointer'>
+
+          <SidebarItem icon={HiArrowSmRight} as="div" className="cursor-pointer">
             <SignOutButton />
-          </Sidebar.Item>
-        </Sidebar.ItemGroup>
-      </Sidebar.Items>
+          </SidebarItem>
+        </SidebarItemGroup>
+      </SidebarItems>
     </Sidebar>
   );
 }
