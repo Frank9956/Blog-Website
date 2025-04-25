@@ -1,131 +1,109 @@
 'use client';
-import { Button, Navbar, TextInput } from 'flowbite-react';
-import Link from 'next/link';
-import { AiOutlineSearch } from 'react-icons/ai';
-import { FaMoon, FaSun } from 'react-icons/fa';
-import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
-import { dark, light } from '@clerk/themes';
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { useTheme } from 'next-themes';
+import { Moon, Sun, Search, Menu } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from "@/components/ui/button"
 
 export default function Header() {
   const path = usePathname();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState('');
   const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false); // custom navbar toggle state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const urlParams = new URLSearchParams(searchParams);
     urlParams.set('searchTerm', searchTerm);
-    const searchQuery = urlParams.toString();
-    router.push(`/search?${searchQuery}`);
+    router.push(`/search?${urlParams.toString()}`);
   };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(searchParams);
-    const searchTermFromUrl = urlParams.get('searchTerm');
-    if (searchTermFromUrl) {
-      setSearchTerm(searchTermFromUrl);
+    const searchFromUrl = urlParams.get('searchTerm');
+    if (searchFromUrl) {
+      setSearchTerm(searchFromUrl);
     }
   }, [searchParams]);
 
   return (
-    <Navbar className='border-b-2' fluid rounded>
-      <Link
-        href='/'
-        className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'
-      >
-        <span className='px-2 py-2 bg-gradient-to-r from-blue-500 via-orange-500 to-pink-500 rounded-lg text-white'>
+    <header className="border-b px-4 py-2 flex items-center justify-between">
+      {/* Logo/Title */}
+      <Link href="/" className="text-xl font-bold">
+        <span className="px-2 py-1 bg-gradient-to-r from-blue-500 via-orange-500 to-pink-500 rounded-lg text-white">
           Entrance&apos;s
-        </span>
+        </span>{' '}
         Fever
       </Link>
 
-      <form onSubmit={handleSubmit}>
-        <TextInput
-          type='text'
-          placeholder='Search...'
-          rightIcon={AiOutlineSearch}
-          className='hidden lg:inline'
+      {/* Search Bar (desktop) */}
+      <form onSubmit={handleSubmit} className="hidden lg:flex items-center space-x-2">
+        <Input
+          type="text"
+          placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <Button type="submit" variant="outline" size="icon">
+          <Search className="w-4 h-4" />
+        </Button>
       </form>
 
-      <Button className='w-12 h-10 lg:hidden' color='gray' pill>
-        <AiOutlineSearch />
-      </Button>
-
-      <div className='flex gap-2 md:order-2'>
+      {/* Right Side Controls */}
+      <div className="flex items-center gap-2">
+        {/* Theme Toggle */}
         <Button
-          className='w-12 h-10 hidden sm:inline'
-          color='gray'
-          pill
+          variant="ghost"
+          size="icon"
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
         >
-          {theme === 'light' ? <FaSun /> : <FaMoon />}
+          {theme === 'light' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </Button>
 
+        {/* Clerk Auth */}
         <SignedIn>
-          <UserButton
-            appearance={{
-              baseTheme: theme === 'light' ? light : dark,
-            }}
-            userProfileUrl='/dashboard?tab=profile'
-          />
+          <UserButton userProfileUrl="/dashboard?tab=profile" />
         </SignedIn>
-
         <SignedOut>
-          <Link href='/sign-in'>
-          <Button color='purple' outline>
-          Sign In
-            </Button>
+          <Link href="/sign-in">
+            <Button variant="outline">Sign In</Button>
           </Link>
         </SignedOut>
 
-        {/* Custom Toggle Button */}
-        <Button
-          className='md:hidden'
-          color='gray'
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          ☰
+        {/* Hamburger Menu */}
+        <Button variant="ghost" className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
+          <Menu />
         </Button>
       </div>
 
-      {/* Toggle navbar links */}
+      {/* Mobile Nav Links */}
       {isOpen && (
-        <div className='w-full md:hidden mt-2'>
-          <ul className='flex flex-col gap-2'>
-            <li>
-              <Link href='/'>
-                <Navbar.Link active={path === '/'} as={'div'}>
-                  Home
-                </Navbar.Link>
-              </Link>
-            </li>
-            <li>
-              <Link href='/about'>
-                <Navbar.Link active={path === '/about'} as={'div'}>
-                  About
-                </Navbar.Link>
-              </Link>
-            </li>
-            <li>
-              <Link href='/projects'>
-                <Navbar.Link active={path === '/projects'} as={'div'}>
-                  Projects
-                </Navbar.Link>
-              </Link>
-            </li>
-          </ul>
-        </div>
+        <nav className="absolute top-16 left-0 w-full bg-background border-t p-4 flex flex-col gap-2 md:hidden">
+          <Link
+            href="/"
+            className={`hover:underline ${path === '/' && 'font-semibold'}`}
+          >
+            Home
+          </Link>
+          <Link
+            href="/about"
+            className={`hover:underline ${path === '/about' && 'font-semibold'}`}
+          >
+            About
+          </Link>
+          <Link
+            href="/projects"
+            className={`hover:underline ${path === '/projects' && 'font-semibold'}`}
+          >
+            Projects
+          </Link>
+        </nav>
       )}
-    </Navbar>
+    </header>
   );
 }
