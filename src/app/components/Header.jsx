@@ -56,6 +56,9 @@ export default function Header() {
           <Link href="/law" className={`${path === '/law' ? 'font-bold underline' : 'hover:underline'}`}>
             Law
           </Link>
+          <Link href="/about" className={`${path === '/law' ? 'font-bold underline' : 'hover:underline'}`}>
+            ABOUT Us
+          </Link>
         </nav>
 
         {/* Search & Account Section */}
