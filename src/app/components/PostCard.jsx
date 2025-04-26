@@ -2,25 +2,27 @@ import Link from 'next/link';
 
 export default function PostCard({ post }) {
   return (
-    <div className='group relative w-full h-[350px] overflow-hidden rounded-lg sm:w-[330px] transition-all border border-transparent hover:border-white'>
-      <Link href={`/post/${post.slug}`}>
+    <div className="group relative w-full sm:w-[330px] h-[360px] overflow-hidden rounded-lg border border-transparent hover:border-white transition-all duration-300 bg-white dark:bg-black">
+      <Link href={`/post/${post.slug}`} className="block">
         <img
-          src={post.image || '/default-image.jpg'} // Default image if none is provided
-          alt='post cover'
-          className='h-[200px] w-full object-cover group-hover:h-[180px] transition-all duration-300'
+          src={post.image || '/default-image.jpg'}
+          alt={post.title}
+          className="w-full h-[200px] object-cover transition-all duration-300 group-hover:scale-105"
         />
       </Link>
-      <div className='p-3 flex flex-col gap-2'>
-        <p className='text-lg font-semibold line-clamp-2 text-white'>{post.title}</p>
-        <span className='italic text-sm text-gray-400'>{post.category}</span>
-        <span className='text-xs text-gray-500'>{new Date(post.createdAt).toLocaleDateString()}</span>
-        <Link
-          href={`/post/${post.slug}`}
-          className='z-10 absolute bottom-[-50px] left-0 right-0 border border-white text-white hover:bg-black hover:text-white transition-all duration-300 text-center py-2 rounded-md !rounded-tl-none m-2 bg-transparent group-hover:bottom-2 group-hover:bg-black group-hover:border-transparent'
-        >
-          Read article
-        </Link>
+
+      <div className="p-4 flex flex-col gap-2 text-black dark:text-white">
+        <p className="text-lg font-semibold line-clamp-2">{post.title}</p>
+        <span className="italic text-sm text-gray-600 dark:text-gray-400">{post.category}</span>
+        <span className="text-xs text-gray-500">{new Date(post.createdAt).toLocaleDateString()}</span>
       </div>
+
+      <Link
+        href={`/post/${post.slug}`}
+        className="absolute left-4 right-4 bottom-[-50px] group-hover:bottom-4 transition-all duration-300 text-center py-2 rounded-md bg-black text-white  dark:bg-white dark:text-black dark:hover:bg-orange-500 hover:bg-orange-500 hover:text-white"
+        >
+        Read article
+      </Link>
     </div>
   );
 }

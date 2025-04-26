@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -7,21 +8,21 @@ import { useTheme } from 'next-themes';
 import { Moon, Sun, Search, Menu } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 export default function Header() {
   const path = usePathname();
-  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { theme, setTheme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const urlParams = new URLSearchParams(searchParams);
-    urlParams.set('searchTerm', searchTerm);
-    router.push(`/search?${urlParams.toString()}`);
-  };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(searchParams);
@@ -31,88 +32,137 @@ export default function Header() {
     }
   }, [searchParams]);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(searchParams);
+    urlParams.set('searchTerm', searchTerm);
+    router.push(`/search?${urlParams.toString()}`);
+  };
+
   return (
-    <header className="bg-black text-white border-b border-border px-4 py-3">
-      <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-y-2">
+    <header className="bg-white text-black dark:bg-black dark:text-white border-b border-border px-6 py-4 transition-colors">
+      <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-y-3">
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold mr-6">
-          <span className="px-2 py-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 rounded-lg text-black font-extrabold">
-            Entrance&apos;s
-          </span>{' '}
-          Fever
+        <Link href="/" className="flex items-center mr-8 ml-6 border-none">
+        <Image
+            src="public/rmgoe_logo.svg"  // Ensure the correct path from the public directory
+            alt="Logo"
+            width={180}  // Adjust the logo size if needed
+            height={60}  // Adjust the logo size if needed
+            className=""
+          />
         </Link>
 
-        {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-4 font-medium text-sm">
-          <Link href="/" className={`${path === '/' ? 'font-bold underline' : 'hover:underline'}`}>
+        {/* Navigation */}
+        <nav className="hidden md:flex items-center gap-6 font-medium text-lg">
+          <Link
+            href="/"
+            className={`${path === '/' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}
+          >
             Home
           </Link>
-          <Link href="/medical" className={`${path === '/medical' ? 'font-bold underline' : 'hover:underline'}`}>
+          <Link
+            href="/medical"
+            className={`${path === '/medical' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}
+          >
             Medical
           </Link>
-          <Link href="/engineering" className={`${path === '/engineering' ? 'font-bold underline' : 'hover:underline'}`}>
+          <Link
+            href="/engineering"
+            className={`${path === '/engineering' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}
+          >
             Engineering
           </Link>
-          <Link href="/law" className={`${path === '/law' ? 'font-bold underline' : 'hover:underline'}`}>
+          <Link
+            href="/law"
+            className={`${path === '/law' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}
+          >
             Law
           </Link>
-          <Link href="/about" className={`${path === '/about' ? 'font-bold underline' : 'hover:underline'}`}>
-            ABOUT Us
+          <Link
+            href="/about"
+            className={`${path === '/about' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}
+          >
+            About Us
           </Link>
         </nav>
 
-        {/* Search & Account Section */}
-        <div className="flex items-center gap-2 ml-auto">
+        {/* Search & Theme & Auth */}
+        <div className="flex items-center gap-4 ml-auto">
           {/* Search */}
-          <form onSubmit={handleSubmit} className="hidden lg:flex items-center space-x-2">
+          <form onSubmit={handleSubmit} className="hidden lg:flex items-center space-x-3">
             <Input
-              className="bg-background text-white border border-white placeholder:text-gray-400"
+              className="bg-background text-white border placeholder:text-gray-500 text-lg px-4 py-2"
               type="text"
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Button type="submit" variant="outline" size="icon" className="text-white border-white">
-              <Search className="w-4 h-4" />
+            <Button
+              type="submit"
+              variant="outline"
+              size="icon"
+              className="bg-background  border placeholder:text-gray-500  text-lg h-9 w-9 flex items-center justify-center"
+            >
+              <Search className="w-5 h-5" />
             </Button>
           </form>
 
           {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-muted"
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          >
-            {theme === 'light' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </Button>
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="placeholder:text-gray-500 border hover:bg-muted text-lg"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
+              {theme === 'dark' ? (
+                <Moon className="w-9 h-9" />  // Increased size of the Moon icon
+              ) : (
+                <Sun className="w-9  h-9" />  // Increased size of the Sun icon
+              )}
+            </Button>
+          )}
 
           {/* Auth */}
           <SignedIn>
-            <UserButton userProfileUrl="/dashboard?tab=profile" />
+            {/* Increase the user button size */}
+            <UserButton
+              userProfileUrl="/dashboard?tab=profile"
+              appearance={{
+                elements: {
+                  userProfileAvatar: 'w-13 h-13',  // Increased user logo size
+                },
+              }}
+            />
           </SignedIn>
           <SignedOut>
             <Link href="/sign-in">
-              <Button variant="outline" className="text-white border-white">
+              <Button variant="outline" className="text-black border-black text-lg">
                 Sign In
               </Button>
             </Link>
           </SignedOut>
 
-          {/* Hamburger for Mobile */}
-          <Button variant="ghost" className="md:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            className="md:hidden text-black text-lg"
+            onClick={() => setIsOpen(!isOpen)}
+          >
             <Menu />
           </Button>
         </div>
       </div>
 
-      {/* Mobile Nav */}
+      {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden mt-3 flex flex-col gap-2 text-white">
+        <div className="md:hidden mt-3 flex flex-col gap-3 text-black dark:text-white bg-white dark:bg-black p-4 rounded-md">
           <Link href="/" className={`${path === '/' && 'font-bold'}`}>Home</Link>
           <Link href="/medical" className={`${path === '/medical' && 'font-bold'}`}>Medical</Link>
           <Link href="/engineering" className={`${path === '/engineering' && 'font-bold'}`}>Engineering</Link>
           <Link href="/law" className={`${path === '/law' && 'font-bold'}`}>Law</Link>
+          <Link href="/about" className={`${path === '/about' && 'font-bold'}`}>About Us</Link>
         </div>
       )}
     </header>

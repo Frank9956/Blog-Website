@@ -2,9 +2,8 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Header from './components/Header';
 import { ThemeProvider } from 'next-themes';
-import ThemeCom from './components/themeCom';
 import { ClerkProvider } from '@clerk/nextjs';
-import { ThemeModeScript } from 'flowbite-react';
+// Removed: import { ThemeModeScript } from 'flowbite-react';
 import Footer from './components/Footer';
 
 const geistSans = localFont({
@@ -26,19 +25,24 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-      <html lang='en' suppressHydrationWarning>
-        <head>
-          <ThemeModeScript />
-        </head>
+      <html lang="en" suppressHydrationWarning>
+        <head />
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          suppressHydrationWarning
         >
-          <ThemeProvider>
-            <ThemeCom>
+          {/* ThemeProvider from next-themes for shadcn/ui compatibility */}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen">
               <Header />
               {children}
-              {/* <Footer/> */}
-            </ThemeCom>
+              {/* <Footer /> */}
+            </div>
           </ThemeProvider>
         </body>
       </html>

@@ -81,8 +81,10 @@
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
+  /* --background: oklch(0.129 0.042 264.695); */
+  --background: 0 0% 100%;
+  --foreground: 222.2 47.4% 11.2%;
+  /* --foreground: oklch(0.984 0.003 247.858); */
   --card: oklch(0.208 0.042 265.755);
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.208 0.042 265.755);
@@ -112,6 +114,7 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+
 }
 
 @layer base {
@@ -122,3 +125,4 @@
     @apply bg-background text-foreground;
   }
 }
+
