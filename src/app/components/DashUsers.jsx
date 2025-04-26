@@ -1,13 +1,17 @@
 'use client';
 
-import { Table } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useUser } from '@clerk/nextjs';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'; // Using ShadCN UI components
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
 export default function DashUsers() {
   const { user, isLoaded } = useUser();
   const [users, setUsers] = useState([]);
 
+  // Fetch users from the API when the component mounts
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -20,67 +24,120 @@ export default function DashUsers() {
             userMongoId: user?.publicMetadata?.userMongoId,
           }),
         });
-        const data = await res.json();
+
+        // Check if the response is okay (status 200)
         if (res.ok) {
-          setUsers(data.users);
+          const data = await res.json();
+          setUsers(data.users); // Set users in state
+        } else {
+          // If the response is not okay, handle it here
+          const errorData = await res.json();
+          console.error('Error fetching users:', errorData.message);
         }
       } catch (error) {
-        console.log(error.message);
+        console.error('Error:', error.message);
       }
     };
+
     if (user?.publicMetadata?.isAdmin) {
-      fetchUsers();
+      fetchUsers(); // Fetch users only if the logged-in user is an admin
     }
   }, [user?.publicMetadata?.isAdmin]);
 
+  // Handle toggling admin status for a user
+  const handleToggleAdmin = async (targetUserId, currentStatus) => {
+    try {
+      const res = await fetch('/api/user/update-role', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: targetUserId,
+          isAdmin: !currentStatus, // Toggle admin status
+        }),
+      });
+
+      if (res.ok) {
+        // Update the user state locally without needing to refetch all users
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u._id === targetUserId ? { ...u, isAdmin: !currentStatus } : u
+          )
+        );
+      } else {
+        const errorData = await res.json();
+        console.error('Error updating user role:', errorData.message);
+      }
+    } catch (err) {
+      console.error('Request Error:', err.message);
+    }
+  };
+
+  // Display a message if the user is not an admin
   if (!user?.publicMetadata?.isAdmin && isLoaded) {
     return (
-      <div className='flex flex-col items-center justify-center h-full w-full py-7'>
-        <h1 className='text-2xl font-semibold'>You are not an admin!</h1>
+      <div className="flex flex-col items-center justify-center h-full w-full py-7">
+        <h1 className="text-3xl font-semibold text-black dark:text-white">You are not an admin!</h1>
       </div>
     );
   }
+
   return (
-    <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
+    <div className="overflow-x-auto md:mx-auto p-6 scrollbar-none dark:bg-black dark:text-white">
       {user?.publicMetadata?.isAdmin && users.length > 0 ? (
-        <>
-          <Table hoverable className='shadow-md'>
-            <Table.Head>
-              <Table.HeadCell>Date created</Table.HeadCell>
-              <Table.HeadCell>User image</Table.HeadCell>
-              <Table.HeadCell>Username</Table.HeadCell>
-              <Table.HeadCell>Email</Table.HeadCell>
-              <Table.HeadCell>Admin</Table.HeadCell>
-            </Table.Head>
-            {users.map((user) => (
-              <Table.Body className='divide-y' key={user._id}>
-                <Table.Row className='bg-white dark:border-gray-700 dark:bg-gray-800'>
-                  <Table.Cell>
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <img
-                      src={user.profilePicture}
-                      alt={user.username}
-                      className='w-10 h-10 object-cover bg-gray-500 rounded-full'
-                    />
-                  </Table.Cell>
-                  <Table.Cell>{user.username}</Table.Cell>
-                  <Table.Cell>{user.email}</Table.Cell>
-                  <Table.Cell>
-                    {user.isAdmin ? (
-                      <FaCheck className='text-green-500' />
-                    ) : (
-                      <FaTimes className='text-red-500' />
-                    )}
-                  </Table.Cell>
-                </Table.Row>
-              </Table.Body>
+        <Table className="shadow-md dark:bg-black dark:border-gray-700">
+          <TableHeader>
+            <TableRow className="bg-gray-200 dark:bg-gray-800">
+              <TableHead className="text-lg text-black dark:text-white">Date Created</TableHead>
+              <TableHead className="text-lg text-black dark:text-white">User Image</TableHead>
+              <TableHead className="text-lg text-black dark:text-white">Username</TableHead>
+              <TableHead className="text-lg text-black dark:text-white">Email</TableHead>
+              <TableHead className="text-lg text-black dark:text-white">Admin</TableHead>
+              <TableHead className="text-lg text-black dark:text-white">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {users.map((userItem) => (
+              <TableRow key={userItem._id} className="bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <TableCell className="text-lg text-black dark:text-white">
+                  {new Date(userItem.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <img
+                    src={userItem.profilePicture}
+                    alt={userItem.username}
+                    className="w-12 h-12 object-cover bg-gray-500 rounded-full"
+                  />
+                </TableCell>
+                <TableCell className="text-lg text-black dark:text-white">{userItem.username}</TableCell>
+                <TableCell className="text-lg text-black dark:text-white">{userItem.email}</TableCell>
+                <TableCell>
+                  {userItem.isAdmin ? (
+                    <Badge variant="success" className="text-md">
+                      <FaCheck className="mr-1" /> Admin
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive" className="text-md">
+                      <FaTimes className="mr-1" /> Not Admin
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleToggleAdmin(userItem._id, userItem.isAdmin)}
+                  >
+                    {userItem.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </Table>
-        </>
+          </TableBody>
+        </Table>
       ) : (
-        <p>You have no users yet!</p>
+        <p className="text-xl text-black dark:text-white">You have no users yet!</p>
       )}
     </div>
   );

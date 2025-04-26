@@ -1,98 +1,31 @@
 'use client';
 
-import { Button, Select, TextInput } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { FaUniversity, FaLaptop, FaGavel } from 'react-icons/fa';
+import Link from 'next/link';
 import PostCard from '../components/PostCard';
+
+// Categories displayed like in Home page
+const categories = [
+  { name: 'Medical', icon: <FaUniversity />, value: 'medical' },
+  { name: 'Engineering', icon: <FaLaptop />, value: 'engineering' },
+  { name: 'Law', icon: <FaGavel />, value: 'law' },
+  { name: 'Board', icon: <FaGavel />, value: 'board' },
+  { name: 'Uncategorized', icon: <FaGavel />, value: 'uncategorized' },
+];
+
 export default function Search() {
-  const [sidebarData, setSidebarData] = useState({
-    searchTerm: '',
-    sort: 'desc',
-    category: 'uncategorized',
-  });
-
-
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('uncategorized');
+
   const searchParams = useSearchParams();
   const router = useRouter();
-  useEffect(() => {
-    const urlParams = new URLSearchParams(searchParams);
-    const searchTermFromUrl = urlParams.get('searchTerm');
-    const sortFromUrl = urlParams.get('sort');
-    const categoryFromUrl = urlParams.get('category');
-    if (searchTermFromUrl || sortFromUrl || categoryFromUrl) {
-      setSidebarData({
-        ...sidebarData,
-        searchTerm: searchTermFromUrl,
-        sort: sortFromUrl,
-        category: categoryFromUrl,
-      });
-    }
-    const fetchPosts = async () => {
-      setLoading(true);
-      const searchQuery = urlParams.toString();
-      const res = await fetch('/api/post/get', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          limit: 9,
-          order: sortFromUrl || 'desc',
-          category: categoryFromUrl || 'uncategorized',
-          searchTerm: searchTermFromUrl,
-        }),
-      });
-      if (!res.ok) {
-        setLoading(false);
-        return;
-      }
-      if (res.ok) {
-        const data = await res.json();
-        setPosts(data.posts);
-        setLoading(false);
-        if (data.posts.length === 9) {
-          setShowMore(true);
-        } else {
-          setShowMore(false);
-        }
-      }
-    };
-    fetchPosts();
-  }, [searchParams]);
-  const handleChange = (e) => {
-    if (e.target.id === 'searchTerm') {
-      setSidebarData({ ...sidebarData, searchTerm: e.target.value });
-    }
-    if (e.target.id === 'sort') {
-      const order = e.target.value || 'desc';
-      setSidebarData({ ...sidebarData, sort: order });
-    }
-    if (e.target.id === 'category') {
-      const category = e.target.value || 'uncategorized';
-      setSidebarData({ ...sidebarData, category });
-    }
-  };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!sidebarData.searchTerm) {
-      sidebarData.searchTerm = '';
-    }
-    const urlParams = new URLSearchParams(searchParams);
-    urlParams.set('searchTerm', sidebarData.searchTerm);
-    urlParams.set('sort', sidebarData.sort);
-    urlParams.set('category', sidebarData.category);
-    const searchQuery = urlParams.toString();
-    router.push(`/search?${searchQuery}`);
-  };
-  const handleShowMore = async () => {
-    const numberOfPosts = posts.length;
-    const startIndex = numberOfPosts;
-    const urlParams = new URLSearchParams(searchParams);
-    urlParams.set('startIndex', startIndex);
-    const searchQuery = urlParams.toString();
+
+  const fetchPosts = async (category) => {
+    setLoading(true);
     const res = await fetch('/api/post/get', {
       method: 'POST',
       headers: {
@@ -100,103 +33,108 @@ export default function Search() {
       },
       body: JSON.stringify({
         limit: 9,
-        order: sidebarData.sort,
-        category: sidebarData.category,
-        searchTerm: sidebarData.searchTerm,
-        startIndex,
+        category: category || 'uncategorized',
+        order: 'desc',
       }),
     });
-    if (!res.ok) {
-      return;
-    }
+
     if (res.ok) {
       const data = await res.json();
-      setPosts([...posts, ...data.posts]);
-      if (data.posts.length === 9) {
-        setShowMore(true);
-      } else {
-        setShowMore(false);
-      }
+      setPosts(data.posts);
+      setShowMore(data.posts.length === 9);
+    } else {
+      setPosts([]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category') || 'uncategorized';
+    setSelectedCategory(categoryFromUrl);
+    fetchPosts(categoryFromUrl);
+  }, [searchParams]);
+
+  const handleCategoryClick = (catValue) => {
+    router.push(`/search?category=${catValue}`);
+    setSelectedCategory(catValue);
+  };
+
+  const handleShowMore = async () => {
+    const res = await fetch('/api/post/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        limit: 9,
+        startIndex: posts.length,
+        category: selectedCategory,
+        order: 'desc',
+      }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      setPosts((prev) => [...prev, ...data.posts]);
+      setShowMore(data.posts.length === 9);
     }
   };
-  return (
-    <div className="flex flex-col md:flex-row">
-      <div className="p-7 border-b md:border-r md:min-h-screen border-gray-500">
-        <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
-          <div className="flex items-center gap-2 justify-end"> {/* Align this div to the right */}
-            <label className="whitespace-nowrap font-semibold">Search Term:</label>
-            <TextInput
-              placeholder="Search..."
-              id="searchTerm"
-              type="text"
-              value={sidebarData.searchTerm}
-              onChange={handleChange}
-              className="w-[200px] ml-auto" // Align to the right with fixed width
-            />
-          </div>
-          <div className="flex items-center gap-2 justify-end"> {/* Align this div to the right */}
-            <label className="font-semibold">Sort:</label>
-            <Select
-              onChange={handleChange}
-              id="sort"
-              className="w-[200px] ml-auto" // Align to the right with fixed width
-            >
-              <option value="desc">Latest</option>
-              <option value="asc">Oldest</option>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2 justify-end"> {/* Align this div to the right */}
-            <label className="font-semibold">Category:</label>
-            <Select
-              onChange={handleChange}
-              id="category"
-              className="w-[200px] ml-auto" // Align to the right with fixed width
-            >
-              <option value="uncategorized">Uncategorized</option>
-              <option value="medical">Medical</option>
-              <option value="engineering">Engineering</option>
-              <option value="law">Law</option>
-              <option value="board">Board</option>
-              {/* Add more categories as needed */}
-            </Select>
-          </div>
-          <Button
-            type="submit"
-            outline
-            gradientDuoTone="purpleToPink"
-            className="w-[320px] ml-auto" // Align to the right with fixed width
-          >
-            Apply Filters
-          </Button>
-        </form>
-      </div>
-      <div className="w-full">
-        <h1 className="text-3xl font-semibold sm:border-b border-gray-500 p-3 mt-5">
-          {sidebarData.searchTerm
-            ? `Posts related to '${sidebarData.searchTerm}'`
-            : 'Posts results:'}
-        </h1>
 
-        <div className="p-7 flex flex-wrap gap-4">
-          {!loading && posts.length === 0 && (
-            <p className="text-xl text-gray-500">No posts found.</p>
-          )}
-          {loading && <p className="text-xl text-gray-500">Loading...</p>}
-          {!loading &&
-            posts &&
-            posts.map((post) => <PostCard key={post._id} post={post} />)}
+  return (
+    <div className="flex min-h-screen bg-white dark:bg-black text-black dark:text-white">
+      {/* Sidebar with Categories */}
+      <aside className="w-[20%] hidden md:block sticky top-0 h-screen border-r border-gray-300 dark:border-gray-700 p-6 pl-15">
+        <ul className="space-y-8">
+          {categories.map((cat) => (
+            <li key={cat.value} className="flex items-center gap-4 font-bold">
+              <Link
+                href={`/search?category=${cat.value}`}
+                className="flex items-center gap-4 relative group"
+              >
+                <span className="text-xl">{cat.icon}</span>
+                <span className="text-xl group-hover:text-blue-500 transition-colors duration-300">
+                  {cat.name}
+                </span>
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+              </Link>
+
+
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      {/* Main Content */}
+      <main className="w-full md:w-[80%] p-6 flex flex-col gap-10">
+        <div className="mx-10">
+          <h1 className="text-4xl font-bold mb-4 capitalize">
+            {selectedCategory} News
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Showing latest updates and posts from the "{selectedCategory}" category.
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            {!loading && posts.length === 0 && (
+              <p className="text-xl text-gray-500">No posts found.</p>
+            )}
+            {loading && <p className="text-xl text-gray-500">Loading...</p>}
+            {!loading &&
+              posts.map((post) => <PostCard key={post._id} post={post} />)}
+          </div>
+
           {showMore && (
-            <button
-              onClick={handleShowMore}
-              className="text-teal-500 text-lg hover:underline p-7 w-full"
-            >
-              Show More
-            </button>
+            <div className="text-center mt-6">
+              <button
+                onClick={handleShowMore}
+                className="text-teal-500 text-lg hover:underline p-7 w-full"
+              >
+                Show More
+              </button>
+            </div>
           )}
         </div>
-      </div>
+      </main>
     </div>
-
-
   );
 }

@@ -1,11 +1,10 @@
 'use client';
 
-import {
-  Sidebar,
-  SidebarItem,
-  SidebarItems,
-  SidebarItemGroup,
-} from 'flowbite-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { SignOutButton, useUser } from '@clerk/nextjs';
+import { cn } from '@/lib/utils'; // Utility for merging classes
 import {
   HiUser,
   HiArrowSmRight,
@@ -13,10 +12,6 @@ import {
   HiOutlineUserGroup,
   HiChartPie,
 } from 'react-icons/hi';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { SignOutButton, useUser } from '@clerk/nextjs';
-import Link from 'next/link';
 
 export default function DashSidebar() {
   const [tab, setTab] = useState('');
@@ -32,63 +27,42 @@ export default function DashSidebar() {
 
   const isAdmin = user?.publicMetadata?.isAdmin;
 
+  const links = [
+    { label: 'Dashboard', icon: HiChartPie, href: '/dashboard?tab=dash', adminOnly: true },
+    { label: 'Profile', icon: HiUser, href: '/dashboard?tab=profile', adminOnly: false },
+    { label: 'Posts', icon: HiDocumentText, href: '/dashboard?tab=posts', adminOnly: true },
+    { label: 'Users', icon: HiOutlineUserGroup, href: '/dashboard?tab=users', adminOnly: true },
+  ];
+
   return (
-    <Sidebar className="w-full md:w-56">
-      <SidebarItems>
-        <SidebarItemGroup>
-          {isAdmin && (
-            <Link href="/dashboard?tab=dash">
-              <SidebarItem
-                icon={HiChartPie}
-                active={!tab || tab === 'dash'}
-                as="div"
-              >
-                Dashboard
-              </SidebarItem>
-            </Link>
-          )}
+    <aside className=" w-full md:w-60 border-r bg-white dark:bg-black text-black dark:text-white flex flex-col p-4 space-y-2">
+      {links.map((link) => {
+        if (link.adminOnly && !isAdmin) return null;
 
-          <Link href="/dashboard?tab=profile">
-            <SidebarItem
-              icon={HiUser}
-              active={tab === 'profile'}
-              label={isAdmin ? 'Admin' : 'User'}
-              labelColor="dark"
-              as="div"
-            >
-              Profile
-            </SidebarItem>
+        const isActive = tab === link.href.split('tab=')[1] || (!tab && link.href.includes('dash'));
+
+        return (
+          <Link
+            key={link.label}
+            href={link.href}
+            className={cn(
+              'flex items-center gap-3 px-4 py-2 rounded-xl transition-all hover:bg-muted',
+              isActive ? 'bg-muted font-semibold text-orange-600' : 'text-muted-foreground'
+            )}
+          >
+            <link.icon className="h-6 w-6" />
+            <span className="text-md">{link.label}</span>
           </Link>
+        );
+      })}
 
-          {isAdmin && (
-            <Link href="/dashboard?tab=posts">
-              <SidebarItem
-                icon={HiDocumentText}
-                active={tab === 'posts'}
-                as="div"
-              >
-                Posts
-              </SidebarItem>
-            </Link>
-          )}
-
-          {isAdmin && (
-            <Link href="/dashboard?tab=users">
-              <SidebarItem
-                icon={HiOutlineUserGroup}
-                active={tab === 'users'}
-                as="div"
-              >
-                Users
-              </SidebarItem>
-            </Link>
-          )}
-
-          <SidebarItem icon={HiArrowSmRight} as="div" className="cursor-pointer">
-            <SignOutButton />
-          </SidebarItem>
-        </SidebarItemGroup>
-      </SidebarItems>
-    </Sidebar>
+      {/* Sign Out Button */}
+      <div className="mt-auto">
+        <div className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-muted cursor-pointer transition-all">
+          <HiArrowSmRight className="h-6 w-6" />
+          <SignOutButton />
+        </div>
+      </div>
+    </aside>
   );
 }

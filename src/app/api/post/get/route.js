@@ -4,6 +4,7 @@ import { connect } from '../../../../lib/mongodb/mongoose.js';
 export const POST = async (req) => {
   await connect();
   const data = await req.json();
+
   try {
     const startIndex = parseInt(data.startIndex) || 0;
     const limit = parseInt(data.limit) || 9;
@@ -40,6 +41,7 @@ export const POST = async (req) => {
       createdAt: { $gte: oneMonthAgo },
     });
 
+    
     return new Response(JSON.stringify({ posts, totalPosts, lastMonthPosts }), {
       status: 200,
     });

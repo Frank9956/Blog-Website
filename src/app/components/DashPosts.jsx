@@ -24,9 +24,7 @@ export default function DashPosts() {
       try {
         const res = await fetch('/api/post/get', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             userId: user?.publicMetadata?.userMongoId,
           }),
@@ -50,9 +48,7 @@ export default function DashPosts() {
     try {
       const res = await fetch('/api/post/delete', {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           postId: postIdToDelete,
           userId: user?.publicMetadata?.userMongoId,
@@ -60,9 +56,7 @@ export default function DashPosts() {
       });
       const data = await res.json();
       if (res.ok) {
-        const newPosts = userPosts.filter(
-          (post) => post._id !== postIdToDelete
-        );
+        const newPosts = userPosts.filter((post) => post._id !== postIdToDelete);
         setUserPosts(newPosts);
         setPostIdToDelete('');
       } else {
@@ -82,35 +76,34 @@ export default function DashPosts() {
   }
 
   return (
-    <div className="flex justify-center p-4">
+    <div className="flex justify-center w-full p-4 bg-white text-black dark:bg-black dark:text-white">
       <div className="w-full max-w-7xl relative">
         {/* New Post Button */}
         <Link href="/dashboard/create-post">
-          <Button className="absolute top-4 right-4 z-10">New Post</Button>
+          <button className="absolute top-4 right-4 z-10 px-5 py-2 rounded-md text-base font-medium bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100">
+            New Post
+          </button>
         </Link>
 
-        {user?.publicMetadata?.isAdmin && userPosts.length > 0 ? (
-          <div className="mt-16"> {/* Add margin-top to create space below the button */}
-            <table className="w-full text-lg divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-100 dark:bg-gray-800">
+        {userPosts.length > 0 ? (
+          <div className="mt-16 overflow-x-auto">
+            <table className="min-w-full mx-auto text-base divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-200 dark:bg-gray-800">
                 <tr>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">Date</th>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">Image</th>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">Title</th>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">Category</th>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">Username</th>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">Name</th>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">Delete</th>
-                  <th className="px-6 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">Edit</th>
+                  {['Date', 'Image', 'Title', 'Category', 'Delete', 'Edit'].map((heading) => (
+                    <th key={heading} className="px-4 py-4 text-left font-semibold text-black dark:text-white">
+                      {heading}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+              <tbody className="bg-white dark:bg-black divide-y divide-gray-200 dark:divide-gray-800">
                 {userPosts.map((post) => (
-                  <tr key={post._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
+                  <tr key={post._id} className="hover:bg-gray-100 dark:hover:bg-gray-900 transition">
+                    <td className="px-4 py-4 text-gray-700 dark:text-gray-300 text-base">
                       {new Date(post.updatedAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4">
                       <Link href={`/post/${post.slug}`}>
                         <img
                           src={post.image}
@@ -119,27 +112,29 @@ export default function DashPosts() {
                         />
                       </Link>
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
-                      <Link href={`/post/${post.slug}`}>{post.title}</Link>
+                    <td className="px-4 py-4 max-w-[250px] truncate text-black dark:text-white font-medium text-base">
+                      <Link href={`/post/${post.slug}`} className="hover:underline">
+                        {post.title}
+                      </Link>
                     </td>
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{post.category}</td>
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{post.username}</td>
-                    <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{post.name}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4 text-gray-700 dark:text-gray-300 text-base">
+                      {post.category}
+                    </td>
+                    <td className="px-4 py-4">
                       <button
                         onClick={() => {
                           setShowModal(true);
                           setPostIdToDelete(post._id);
                         }}
-                        className="text-red-500 hover:underline"
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium"
                       >
                         Delete
                       </button>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4">
                       <Link
-                        className="text-blue-500 hover:underline"
                         href={`/dashboard/update-post/${post._id}`}
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium"
                       >
                         Edit
                       </Link>
@@ -150,24 +145,33 @@ export default function DashPosts() {
             </table>
           </div>
         ) : (
-          <p className="text-center text-gray-500 dark:text-gray-400">You have no posts yet!</p>
+          <p className="text-center text-gray-500 dark:text-gray-400 mt-20 text-lg">
+            You have no posts yet!
+          </p>
         )}
 
+        {/* Confirm Delete Modal */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md bg-white dark:bg-black text-black dark:text-white">
             <DialogHeader>
-              <DialogTitle className="flex flex-col items-center gap-2">
-                <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200" />
+              <DialogTitle className="flex flex-col items-center gap-2 text-center">
+                <HiOutlineExclamationCircle className="h-14 w-14 text-gray-500 dark:text-gray-300" />
                 Are you sure you want to delete this post?
               </DialogTitle>
             </DialogHeader>
             <DialogFooter className="flex justify-center gap-4 pt-4">
-              <Button variant="destructive" onClick={handleDeletePost}>
-                Yes, I&apos;m sure
-              </Button>
-              <Button variant="outline" onClick={() => setShowModal(false)}>
+              <button
+                className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-md font-semibold text-base"
+                onClick={handleDeletePost}
+              >
+                Yes, I’m sure
+              </button>
+              <button
+                className="border border-gray-300 dark:border-gray-600 text-black dark:text-white px-5 py-2 rounded-md font-medium text-base"
+                onClick={() => setShowModal(false)}
+              >
                 No, cancel
-              </Button>
+              </button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

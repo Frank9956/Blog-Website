@@ -1,21 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import {
-  HiArrowNarrowUp,
-  HiDocumentText,
-  HiOutlineUserGroup,
-} from 'react-icons/hi';
+import { useState, useEffect } from 'react';
+import { HiArrowNarrowUp, HiDocumentText, HiOutlineUserGroup } from 'react-icons/hi';
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from '@/components/ui/table';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 
 export default function DashboardComp() {
@@ -26,7 +15,6 @@ export default function DashboardComp() {
   const [lastMonthUsers, setLastMonthUsers] = useState(0);
   const [lastMonthPosts, setLastMonthPosts] = useState(0);
   const { user } = useUser();
-
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -38,12 +26,9 @@ export default function DashboardComp() {
       try {
         const res = await fetch('/api/user/get', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ limit: 5 }),
         });
-
         const data = await res.json();
         if (res.ok) {
           setUsers(data.users);
@@ -59,12 +44,9 @@ export default function DashboardComp() {
       try {
         const res = await fetch('/api/post/get', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ limit: 5 }),
         });
-
         const data = await res.json();
         if (res.ok) {
           setPosts(data.posts);
@@ -85,56 +67,66 @@ export default function DashboardComp() {
   if (!mounted) return null;
 
   return (
-    <div className="p-3 md:mx-auto">
-      <div className="flex-wrap flex gap-4 justify-center">
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-2xl shadow-md">
-          <div className="flex justify-between">
+    <div className="p-6 w-[70%] mx-auto bg-white text-black dark:bg-black dark:text-white">
+      {/* Stat Cards */}
+      <div className="flex-wrap flex gap-6 justify-center">
+        {/* Users Card */}
+        <div className="flex flex-col p-6 bg-gray-100 dark:bg-gray-900 gap-4 md:w-72 w-full rounded-2xl shadow-sm border border-gray-300 dark:border-gray-700">
+          <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-gray-500 text-md uppercase">Total Users</h3>
-              <p className="text-2xl">{totalUsers}</p>
+              <h3 className="text-gray-600 dark:text-gray-400 text-lg uppercase">Total Users</h3>
+              <p className="text-4xl font-semibold">{totalUsers}</p>
             </div>
-            <HiOutlineUserGroup className="bg-teal-600 text-white rounded-full text-5xl p-3 shadow-lg" />
+            <HiOutlineUserGroup className="bg-gray-300 dark:bg-gray-700 text-black dark:text-white rounded-full text-5xl p-3 shadow-sm" />
           </div>
-          <div className="flex gap-2 text-sm">
-            <span className="text-green-500 flex items-center">
-              <HiArrowNarrowUp />
+          <div className="flex gap-2 text-lg">
+            <span className="text-gray-700 dark:text-gray-300 flex items-center">
+              <HiArrowNarrowUp className="mr-1" />
               {lastMonthUsers}
             </span>
-            <div className="text-gray-500">Last month</div>
+            <span className="text-gray-500">Last month</span>
           </div>
         </div>
 
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-72 w-full rounded-2xl shadow-md">
-          <div className="flex justify-between">
+        {/* Posts Card */}
+        <div className="flex flex-col p-6 bg-gray-100 dark:bg-gray-900 gap-4 md:w-72 w-full rounded-2xl shadow-sm border border-gray-300 dark:border-gray-700">
+          <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-gray-500 text-md uppercase">Total Posts</h3>
-              <p className="text-2xl">{totalPosts}</p>
+              <h3 className="text-gray-600 dark:text-gray-400 text-lg uppercase">Total Posts</h3>
+              <p className="text-4xl font-semibold">{totalPosts}</p>
             </div>
-            <HiDocumentText className="bg-lime-600 text-white rounded-full text-5xl p-3 shadow-lg" />
+            <HiDocumentText className="bg-gray-300 dark:bg-gray-700 text-black dark:text-white rounded-full text-5xl p-3 shadow-sm" />
           </div>
-          <div className="flex gap-2 text-sm">
-            <span className="text-green-500 flex items-center">
-              <HiArrowNarrowUp />
+          <div className="flex gap-2 text-lg">
+            <span className="text-gray-700 dark:text-gray-300 flex items-center">
+              <HiArrowNarrowUp className="mr-1" />
               {lastMonthPosts}
             </span>
-            <div className="text-gray-500">Last month</div>
+            <span className="text-gray-500">Last month</span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 py-3 mx-auto justify-center">
-        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-2xl dark:bg-gray-800">
-          <div className="flex justify-between p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent users</h1>
-            <Link href="/dashboard?tab=users" passHref>
-              <Button variant="outline">See all</Button>
+      {/* Tables */}
+      <div className="flex flex-col lg:flex-row gap-6 py-10 justify-center">
+        {/* Recent Users */}
+        <div className="flex flex-col w-full lg:w-[40%] shadow-sm p-6 rounded-2xl bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
+          <div className="flex justify-between items-center pb-4">
+            <h2 className="text-xl font-semibold">Recent Users</h2>
+            <Link href="/dashboard?tab=users">
+              <Button
+                variant="outline"
+                className="border-gray-400 text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 text-lg"
+              >
+                See all
+              </Button>
             </Link>
           </div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User image</TableHead>
-                <TableHead>Username</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Image</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Username</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -144,29 +136,35 @@ export default function DashboardComp() {
                     <img
                       src={user.profilePicture}
                       alt="user"
-                      className="w-10 h-10 rounded-full bg-gray-500"
+                      className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-700"
                     />
                   </TableCell>
-                  <TableCell>{user.username}</TableCell>
+                  <TableCell className="text-lg">{user.username}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
 
-        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-2xl dark:bg-gray-800">
-          <div className="flex justify-between p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent posts</h1>
-            <Link href="/dashboard?tab=posts" passHref>
-              <Button variant="outline">See all</Button>
+        {/* Recent Posts */}
+        <div className="flex flex-col w-full lg:w-[60%] shadow-sm p-6 rounded-2xl bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700">
+          <div className="flex justify-between items-center pb-4">
+            <h2 className="text-xl font-semibold">Recent Posts</h2>
+            <Link href="/dashboard?tab=posts">
+              <Button
+                variant="outline"
+                className="border-gray-400 text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-800 text-lg"
+              >
+                See all
+              </Button>
             </Link>
           </div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Post image</TableHead>
-                <TableHead>Post Title</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Image</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Title</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Category</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -176,11 +174,11 @@ export default function DashboardComp() {
                     <img
                       src={post.image}
                       alt="post"
-                      className="w-14 h-10 rounded-md bg-gray-500"
+                      className="w-20 h-14 rounded-md bg-gray-300 dark:bg-gray-700"
                     />
                   </TableCell>
-                  <TableCell className="w-96">{post.title}</TableCell>
-                  <TableCell className="w-5">{post.category}</TableCell>
+                  <TableCell className="text-lg max-w-[280px] truncate">{post.title}</TableCell>
+                  <TableCell className="text-lg">{post.category}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
