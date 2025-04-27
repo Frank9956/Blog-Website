@@ -3,15 +3,14 @@ import './globals.css';
 import Header from './components/Header';
 import { ThemeProvider } from 'next-themes';
 import { ClerkProvider } from '@clerk/nextjs';
+// Removed: import { ThemeModeScript } from 'flowbite-react';
 import Footer from './components/Footer';
-import Sidebar from './components/Sidebar';  // <-- Include the Sidebar here
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
   variable: '--font-geist-sans',
   weight: '100 900',
 });
-
 const geistMono = localFont({
   src: './fonts/GeistMonoVF.woff',
   variable: '--font-geist-mono',
@@ -24,9 +23,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  // Optionally, use logic to conditionally render Sidebar based on the current path
-  const isDashboard = false; // Add your logic to detect if it's the dashboard or any page you want to exclude the Sidebar
-
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
@@ -44,16 +40,7 @@ export default function RootLayout({ children }) {
           >
             <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen">
               <Header />
-              <div className="flex">
-                {/* Conditionally render Sidebar */}
-                {!isDashboard && (
-                  <div className="md:w-100">
-                    <Sidebar />
-                  </div>
-                )}
-
-                <main className="w-full">{children}</main>
-              </div>
+              {children}
               {/* <Footer /> */}
             </div>
           </ThemeProvider>
