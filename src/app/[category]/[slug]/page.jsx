@@ -36,7 +36,7 @@ export default async function PostPage({ params }) {
       {/* Category Button */}
       <div className="flex p-3">
         <Link
-          href={`/search?category=${post?.category?.toLowerCase()}`}
+          href={`/${post.category}`}
           className='self-center'
         >
           <Button color='gray' pill size='xs'>

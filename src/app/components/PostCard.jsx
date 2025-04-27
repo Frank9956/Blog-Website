@@ -3,7 +3,8 @@ import Link from 'next/link';
 export default function PostCard({ post }) {
   return (
     <div className="group relative w-full sm:w-[330px] h-[360px] overflow-hidden rounded-lg border border-transparent hover:border-white transition-all duration-300 bg-white dark:bg-black">
-      <Link href={`/post/${post.slug}`} className="block">
+      <Link href={`/${post.category}/${post.slug}`}
+        className="block">
         <img
           src={post.image || '/default-image.jpg'}
           alt={post.title}
@@ -18,9 +19,9 @@ export default function PostCard({ post }) {
       </div>
 
       <Link
-        href={`/post/${post.slug}`}
+        href={`/${post.category}/${post.slug}`}
         className="absolute left-4 right-4 bottom-[-50px] group-hover:bottom-4 transition-all duration-300 text-center py-2 rounded-md bg-black text-white  dark:bg-white dark:text-black dark:hover:bg-orange-500 hover:bg-orange-500 hover:text-white"
-        >
+      >
         Read article
       </Link>
     </div>

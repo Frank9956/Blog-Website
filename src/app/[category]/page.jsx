@@ -2,22 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { FaGraduationCap, FaUniversity, FaLaptop, FaGavel, FaBook } from 'react-icons/fa';
-import Link from 'next/link';
+import { FaUniversity, FaLaptop, FaGavel } from 'react-icons/fa';
+import Sidebar from '.././components/sidebar'; 
 import PostCard from '../components/PostCard';
 
-const categories = [
-   { name: 'Medical', icon: <FaUniversity />, value: 'medical' },
-      { name: 'Engineering', icon: <FaLaptop />, value: 'engineering' },
-      { name: 'Law', icon: <FaGavel />, value: 'law' },
-      { name: 'Board', icon: <FaGraduationCap />, value: 'board' },
-      { name: 'Uncategorized', icon: <FaBook />, value: 'uncategorized' },
-];
 
 export default function CategoryPage() {
   const { category } = useParams();
-  const router = useRouter();
-
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -75,28 +66,9 @@ export default function CategoryPage() {
 
   return (
     <div className="flex min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      {/* Sidebar with Categories */}
-      <aside className="w-[20%] hidden md:block sticky top-0 h-screen border-r border-gray-300 dark:border-gray-700 p-6 pl-15">
-        <ul className="space-y-8">
-          {categories.map((cat) => (
-            <li key={cat.value} className="flex items-center gap-4 font-bold">
-              <Link
-                href={`/${cat.value}`}
-                className="flex items-center gap-4 relative group"
-              >
-                <span className="text-xl">{cat.icon}</span>
-                <span className="text-xl group-hover:text-blue-500 transition-colors duration-300">
-                  {cat.name}
-                </span>
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </aside>
-
-      {/* Main Content */}
-      <main className="w-full md:w-[100%] p-6 flex flex-col gap-10">
+      <Sidebar />
+      
+      <main className="w-full md:w-[80%] p-6 flex flex-col gap-10">
         <div className="mx-10">
           <h1 className="text-4xl font-bold mb-4 capitalize">
             {category} News
