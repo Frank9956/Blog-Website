@@ -31,6 +31,7 @@ export default function DashSidebar() {
     { label: 'Dashboard', icon: HiChartPie, href: '/dashboard?tab=dash', adminOnly: true },
     { label: 'Profile', icon: HiUser, href: '/dashboard?tab=profile', adminOnly: false },
     { label: 'Posts', icon: HiDocumentText, href: '/dashboard?tab=posts', adminOnly: true },
+    { label: 'Categories', icon: HiDocumentText, href: '/dashboard?tab=categories', adminOnly: true }, // <-- new row
     { label: 'Users', icon: HiOutlineUserGroup, href: '/dashboard?tab=users', adminOnly: true },
   ];
 
