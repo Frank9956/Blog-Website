@@ -5,7 +5,7 @@ import Header from './components/Header';
 import { ThemeProvider } from 'next-themes';
 import { ClerkProvider } from '@clerk/nextjs';
 import Footer from './components/Footer';
-import Sidebar from './components/Sidebar';  // Default Sidebar
+import Sidebar from './components/sidebar';  // Default Sidebar
 import { usePathname } from 'next/navigation';  // Use this for route checking
 
 const geistSans = localFont({
