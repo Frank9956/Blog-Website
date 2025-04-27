@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen bg-white dark:bg-black text-black dark:text-white">
       {/* Sidebar */}
-      <Sidebar />  {/* Use Sidebar Component */}
+      {/* Use Sidebar Component */}
 
       {/* Main Content */}
       <main className="w-full md:w-[100%] p-6 flex flex-col gap-10">

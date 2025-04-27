@@ -22,7 +22,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-[20%] hidden md:block sticky top-0 h-screen border-r border-gray-300 dark:border-gray-700 p-6 pl-15">
+    <aside className="w-[100%] hidden md:block sticky top-0 h-screen border-r border-gray-300 dark:border-gray-700 p-6 pl-15">
       <div className="space-y-3">
         {categories.length > 0 ? (
           categories.map((cat) => (

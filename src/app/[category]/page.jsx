@@ -1,11 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { FaUniversity, FaLaptop, FaGavel } from 'react-icons/fa';
-import Sidebar from '.././components/sidebar'; 
+import { useParams } from 'next/navigation';
 import PostCard from '../components/PostCard';
-
 
 export default function CategoryPage() {
   const { category } = useParams();
@@ -65,39 +62,31 @@ export default function CategoryPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      <Sidebar />
-      
-      <main className="w-full md:w-[80%] p-6 flex flex-col gap-10">
-        <div className="mx-10">
-          <h1 className="text-4xl font-bold mb-4 capitalize">
-            {category} News
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Showing latest updates and posts from the "{category}" category.
-          </p>
+    <div className="mx-10">
+      <h1 className="text-4xl font-bold mb-4 capitalize">{category} News</h1>
+      <p className="text-gray-600 dark:text-gray-400 mb-6">
+        Showing latest updates and posts from the "{category}" category.
+      </p>
 
-          <div className="flex flex-wrap gap-4">
-            {!loading && posts.length === 0 && (
-              <p className="text-xl text-gray-500">No posts found.</p>
-            )}
-            {loading && <p className="text-xl text-gray-500">Loading...</p>}
-            {!loading &&
-              posts.map((post) => <PostCard key={post._id} post={post} />)}
-          </div>
+      <div className="flex flex-wrap gap-4">
+        {!loading && posts.length === 0 && (
+          <p className="text-xl text-gray-500">No posts found.</p>
+        )}
+        {loading && <p className="text-xl text-gray-500">Loading...</p>}
+        {!loading &&
+          posts.map((post) => <PostCard key={post._id} post={post} />)}
+      </div>
 
-          {showMore && (
-            <div className="text-center mt-6">
-              <button
-                onClick={handleShowMore}
-                className="text-teal-500 text-lg hover:underline p-7 w-full"
-              >
-                Show More
-              </button>
-            </div>
-          )}
+      {showMore && (
+        <div className="text-center mt-6">
+          <button
+            onClick={handleShowMore}
+            className="text-teal-500 text-lg hover:underline p-7 w-full"
+          >
+            Show More
+          </button>
         </div>
-      </main>
+      )}
     </div>
   );
 }
