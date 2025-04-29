@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import RecentPosts from './components/RecentPosts';
-import Sidebar from './components/Sidebar';  // Import Sidebar Component
 
 export default function Home() {
   return (
