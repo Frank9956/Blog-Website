@@ -1,3 +1,4 @@
+
 import localFont from 'next/font/local';
 import './globals.css';
 import Header from './components/Header';
@@ -38,17 +39,22 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
-            <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen">
-              <Header />
-              <div className="flex">
-                {/* Sidebar is always visible except on dashboard pages */}
-                <div className="">
+            <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen flex flex-col">
+              <div className="fixed bg-transparent top-0 left-0 w-full z-50">
+                <Header />
+              </div>
+
+              <div className="flex flex-1 pt-[60px] w-full no-scrollbar">
+                <div className="h-[calc(100vh-80px)] overflow-y-auto border-r border-border no-scrollbar w-screen-[20%]">
                   <Sidebar />
                 </div>
 
-                <main className="w-full">{children}</main>
+                <main className="flex-1 h-[calc(100vh-80px)] overflow-y-auto no-scrollbar">
+                  {children}
+                </main>
               </div>
-              {/* <Footer /> */}
+
+              <Footer />
             </div>
           </ThemeProvider>
         </body>

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
 export default function Header() {
-  const { user } = useUser(); // To access current user
+  const { user } = useUser();
   const path = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -20,17 +20,31 @@ export default function Header() {
   const [mounted, setMounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    setMounted(true);
+    async function fetchCategories() {
+      try {
+        const res = await fetch('/api/category');
+        if (!res.ok) throw new Error('Failed to fetch categories');
+        const data = await res.json();
+        setCategories(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchCategories();
   }, []);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(searchParams);
     const searchFromUrl = urlParams.get('searchTerm');
-    if (searchFromUrl) {
-      setSearchTerm(searchFromUrl);
-    }
+    if (searchFromUrl) setSearchTerm(searchFromUrl);
   }, [searchParams]);
 
   const handleSubmit = (e) => {
@@ -40,117 +54,107 @@ export default function Header() {
     router.push(`/${urlParams.toString()}`);
   };
 
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <>
-      <header className="fixed top-0 w-full z-50 bg-white text-black dark:bg-black dark:text-white border-b border-border px-6 py-4 transition-colors">
-        <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-y-3">
-          {/* Logo */}
-          <Link href="/" className="flex items-center mr-8 ml-6 border-none">
-            <Image
-              src="rmgoe_logo.svg"
-              alt="Logo"
-              width={180}
-              height={60}
-              className=""
-            />
+    <header className="fixed top-0 left-0 w-full z-50 bg-transparent text-black dark:text-white backdrop-blur-[10px]">
+      <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap px-6 py-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center mr-8">
+          <Image src="/rmgoe_logo.svg" alt="Logo" width={180} height={60} />
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-6 font-medium text-lg">
+          <Link href="https://rmgoe.org/neet_rank_predictor" className="hover:text-orange-600">
+            NEET College Predictor
           </Link>
+          <Link href="https://rmgoe.org/college_rank_predictor" className="hover:text-orange-600">
+            NEET Rank Predictor
+          </Link>
+          <Link href="/about" className={`${path === '/about' ? 'font-bold text-orange-600' : ''}`}>
+            About Us
+          </Link>
+        </nav>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-6 font-medium text-lg">
-            <Link href="/engineering" className={`${path === '/engineering' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}>
-              NEET College Predictor
-            </Link>
-            <Link href="/law" className={`${path === '/law' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}>
-              NEET Rank Predictor
-            </Link>
-            <Link href="/about" className={`${path === '/about' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}>
-              About Us
-            </Link>
-          </nav>
-
-          {/* Search, Theme, Auth */}
-          <div className="flex items-center gap-4 ml-auto">
-            {/* Search */}
-            <form onSubmit={handleSubmit} className="hidden lg:flex items-center space-x-3">
-              <Input
-                className="bg-background text-grey border placeholder:text-gray-500 text-lg px-4 py-2"
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <Button
-                type="submit"
-                variant="outline"
-                size="icon"
-                className="bg-background border placeholder:text-gray-500 text-lg h-9 w-9 flex items-center justify-center"
-              >
-                <Search className="w-5 h-5" />
-              </Button>
-            </form>
-
-            {/* Theme Toggle */}
-            {mounted && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="placeholder:text-gray-500 border hover:bg-muted text-lg"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              >
-                {theme === 'dark' ? (
-                  <Moon className="w-9 h-9" />
-                ) : (
-                  <Sun className="w-9 h-9" />
-                )}
-              </Button>
-            )}
-
-            {/* Auth */}
-            <SignedIn>
-              <UserButton
-                userProfileUrl="/dashboard?tab=profile"
-                appearance={{
-                  elements: { userProfileAvatar: 'w-13 h-13' },
-                }}
-              />
-            </SignedIn>
-
-            {/* Sign In - Only shown for admins trying to access /dashboard */}
-            <SignedOut>
-              {path.startsWith('/dashboard') && user?.role === 'admin' && (
-                <Link href="/sign-in">
-                  <Button variant="outline" className="text-black dark:text-white border-black text-lg">
-                    Sign In
-                  </Button>
-                </Link>
-              )}
-            </SignedOut>
-
-            {/* Mobile Menu */}
-            <Button
-              variant="ghost"
-              className="md:hidden text-black text-lg"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              <Menu />
+        {/* Right Side */}
+        <div className="flex items-center gap-4 ml-auto">
+          {/* Search */}
+          <form onSubmit={handleSubmit} className="hidden lg:flex items-center space-x-3">
+            <Input
+              className="bg-background text-grey border placeholder:text-gray-500 text-lg px-4 py-2"
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Button type="submit" variant="outline" size="icon">
+              <Search className="w-5 h-5" />
             </Button>
-          </div>
+          </form>
+
+          {/* Theme Toggle */}
+          {mounted && (
+            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+              {theme === 'dark' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
+            </Button>
+          )}
+
+          {/* Auth Buttons */}
+          <SignedIn>
+            <UserButton
+              userProfileUrl="/dashboard?tab=profile"
+              appearance={{ elements: { userProfileAvatar: 'w-10 h-10' } }}
+            />
+          </SignedIn>
+
+          <SignedOut>
+            {path.startsWith('/dashboard') && user?.role === 'admin' && (
+              <Link href="/sign-in">
+                <Button variant="outline">Sign In</Button>
+              </Link>
+            )}
+          </SignedOut>
+
+          {/* Mobile Menu Toggle */}
+          <Button variant="ghost" className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
+            <Menu />
+          </Button>
         </div>
+      </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden mt-3 flex flex-col gap-3 text-black dark:text-white bg-white dark:bg-black p-4 rounded-md">
-            <Link href="/" className={`${path === '/' && 'font-bold'}`}>Home</Link>
-            <Link href="/medical" className={`${path === '/medical' && 'font-bold'}`}>Medical</Link>
-            <Link href="/engineering" className={`${path === '/engineering' && 'font-bold'}`}>Engineering</Link>
-            <Link href="/law" className={`${path === '/law' && 'font-bold'}`}>Law</Link>
-            <Link href="/about" className={`${path === '/about' && 'font-bold'}`}>About Us</Link>
-          </div>
-        )}
-      </header>
-
-      {/* Invisible spacer */}
-      <div className="h-[80px]" />
-    </>
+      {/* Mobile Menu */}
+      <div
+        className={`overflow-hidden transition-all duration-300 md:hidden px-6 ${
+          isOpen ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="flex flex-col gap-2 bg-white dark:bg-black rounded-md py-4 px-4">
+          {isLoading ? (
+            <div>Loading categories...</div>
+          ) : (
+            categories.map((category) => (
+              <Link
+                key={category.slug}
+                href={`/${category.slug}`}
+                onClick={handleLinkClick}
+                className={`${path === `/${category.slug}` ? 'font-bold' : ''}`}
+              >
+                {category.name}
+              </Link>
+            ))
+          )}
+          <Link
+            href="/about"
+            onClick={handleLinkClick}
+            className={`${path === '/about' ? 'font-bold' : ''}`}
+          >
+            About Us
+          </Link>
+        </div>
+      </div>
+    </header>
   );
 }

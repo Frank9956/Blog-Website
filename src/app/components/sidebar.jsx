@@ -2,16 +2,16 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { FaBook } from 'react-icons/fa';
+import { FaGraduationCap  } from 'react-icons/fa';
 import { usePathname } from 'next/navigation';  // Import usePathname to get the current path
 
 export default function Sidebar() {
   const [categories, setCategories] = useState([]);
-  
+
   useEffect(() => {
     fetchCategories();
   }, []);
-  
+
   async function fetchCategories() {
     try {
       const res = await fetch('api/category');
@@ -21,13 +21,13 @@ export default function Sidebar() {
       console.error('Failed to fetch categories:', error);
     }
   }
-  
+
   const pathname = usePathname(); // Get the current path
   // Condition to check if we are on the dashboard page
   if (pathname.startsWith('/dashboard') || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
-    return (<div className="w-[0%]"></div>);  
+    return (<div className="w-[0%]"></div>);
   }
-  
+
 
   return (
     <div className="md:w-100">
@@ -37,12 +37,12 @@ export default function Sidebar() {
         <div className="space-y-3">
           {categories.length > 0 ? (
             categories.map((cat) => (
-              <div key={cat._id} className="flex justify-between items-center border p-3 rounded-md">
+              <div key={cat._id} className="flex justify-between items-center border p-3 rounded-md ">
                 <Link
                   href={`/${cat.slug}`}
                   className="flex items-center gap-4 font-bold text-lg hover:text-blue-500"
                 >
-                  <FaBook className="text-xl" /> {/* Default book icon */}
+                  <FaGraduationCap className="text-xl text-orange-500" />
                   <span>{cat.name}</span>
                 </Link>
               </div>

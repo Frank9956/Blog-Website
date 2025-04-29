@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 
 export default function DashCategories() {
+  const { user } = useUser();
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -95,6 +97,13 @@ export default function DashCategories() {
     setShowModal(true);
   }
 
+  if (!user?.publicMetadata?.isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full w-full py-7">
+        <h1 className="text-2xl font-semibold">You are not an admin!</h1>
+      </div>
+    );
+  }
   return (
     <div className="p-6 w-full flex gap-10">
       <div className="w-[50%]">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import DashSidebar from '../components/DashSidebar';
 import DashProfile from '../components/DashProfile';
@@ -12,7 +13,8 @@ import DashCategories from '../components/DashCategories'; // <-- NEW IMPORT
 export default function Dashboard() {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState('');
-  
+  const { user } = useUser();
+
   useEffect(() => {
     const urlParams = new URLSearchParams(searchParams);
     const tabFromUrl = urlParams.get('tab');
@@ -20,6 +22,14 @@ export default function Dashboard() {
       setTab(tabFromUrl);
     }
   }, [searchParams]);
+
+  if (!user?.publicMetadata?.isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full w-full py-7">
+        <h1 className="text-2xl font-semibold">You are not an admin!</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="max-h-screen flex flex-col md:flex-row">

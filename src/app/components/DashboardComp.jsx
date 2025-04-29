@@ -8,6 +8,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Button } from '@/components/ui/button';
 
 export default function DashboardComp() {
+  
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -63,6 +64,14 @@ export default function DashboardComp() {
       fetchPosts();
     }
   }, [user]);
+
+  if (!user?.publicMetadata?.isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full w-full py-7">
+        <h1 className="text-2xl font-semibold">You are not an admin!</h1>
+      </div>
+    );
+  }
 
   if (!mounted) return null;
 
