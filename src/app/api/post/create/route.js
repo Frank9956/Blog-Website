@@ -21,6 +21,8 @@ export const POST = async (req) => {
       .join('-')
       .toLowerCase()
       .replace(/[^a-zA-Z0-9-]/g, '');
+
+      console.log('Received data:', data);  
     const newPost = await Post.create({
       userId: user.publicMetadata.userMongoId,
       content: data.content,

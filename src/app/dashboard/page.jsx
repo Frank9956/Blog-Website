@@ -23,11 +23,11 @@ export default function Dashboard() {
 
   return (
     <div className="max-h-screen flex flex-col md:flex-row">
-      <div className="md:w-56">
-        {/* Sidebar */}
-        <DashSidebar />
-      </div>
 
+      <div className="md:w-100">
+              <DashSidebar />
+            </div>
+      
       {/* Tabs */}
       {tab === 'profile' && <DashProfile />}
       {tab === 'posts' && <DashPosts />}

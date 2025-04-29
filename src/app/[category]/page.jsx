@@ -7,14 +7,46 @@ import PostCard from '../components/PostCard';
 export default function CategoryPage() {
   const { category } = useParams();
   const [posts, setPosts] = useState([]);
+  const [categoryDescription, setCategoryDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
     if (category) {
+      fetchCategoryDescription(category);
       fetchPosts(category);
     }
   }, [category]);
+
+  // Fetch the category description
+  const [categoryName, setCategoryName] = useState('');
+
+  const fetchCategoryDescription = async (categorySlug) => {
+    try {
+      const res = await fetch('/api/category/get', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ slug: categorySlug }),
+      });
+  
+      if (res.ok) {
+        const data = await res.json();
+        setCategoryDescription(data.description || 'No description available');
+        setCategoryName(data.name || categorySlug); // fallback if name missing
+      } else {
+        setCategoryDescription('Category not found.');
+        setCategoryName(categorySlug);
+      }
+    } catch (error) {
+      setCategoryDescription('Failed to fetch category description.');
+      setCategoryName(categorySlug);
+      console.error('Error fetching category description:', error);
+    }
+  };
+  
+  
 
   const fetchPosts = async (cat) => {
     setLoading(true);
@@ -63,16 +95,16 @@ export default function CategoryPage() {
 
   return (
     <div className="mx-10">
-      <h1 className="text-4xl font-bold mb-4 capitalize">{category} News</h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">
-        Showing latest updates and posts from the "{category}" category.
+<h1 className="text-4xl font-bold mb-4 capitalize">{categoryName}</h1>
+<p className="text-gray-600 dark:text-gray-400 mb-6">
+        {categoryDescription}
       </p>
 
       <div className="flex flex-wrap gap-4">
         {!loading && posts.length === 0 && (
           <p className="text-xl text-gray-500">No posts found.</p>
         )}
-        {loading && <p className="text-xl text-gray-500">Loading...</p>}
+        {loading && <p className="text-xl text-gray-500"></p>}
         {!loading &&
           posts.map((post) => <PostCard key={post._id} post={post} />)}
       </div>

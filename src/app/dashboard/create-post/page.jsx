@@ -1,10 +1,23 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { Alert, Button, FileInput, Select, TextInput } from 'flowbite-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+} from '@/components/ui/alert';
 
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 import 'react-quill-new/dist/quill.snow.css';
@@ -22,13 +35,33 @@ import 'react-circular-progressbar/dist/styles.css';
 
 export default function CreatePostPage() {
   const { isSignedIn, user, isLoaded } = useUser();
+  const router = useRouter();
 
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
-  const router = useRouter();
+  const [categories, setCategories] = useState([]);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/category');
+        const data = await res.json();
+        if (res.ok) {
+          setCategories(data);
+        } else {
+          console.error('Failed to load categories:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleUploadImage = async () => {
     try {
@@ -41,11 +74,11 @@ export default function CreatePostPage() {
       const fileName = new Date().getTime() + '-' + file.name;
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
+
       uploadTask.on(
         'state_changed',
         (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setImageUploadProgress(progress.toFixed(0));
         },
         () => {
@@ -56,14 +89,14 @@ export default function CreatePostPage() {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImageUploadProgress(null);
             setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
+            setFormData((prev) => ({ ...prev, image: downloadURL }));
           });
         }
       );
     } catch (error) {
+      console.error(error);
       setImageUploadError('Image upload failed');
       setImageUploadProgress(null);
-      console.log(error);
     }
   };
 
@@ -85,10 +118,8 @@ export default function CreatePostPage() {
         setPublishError(data.message);
         return;
       }
-      if (res.ok) {
-        setPublishError(null);
-        router.push(`/post/${data.slug}`);
-      }
+      setPublishError(null);
+      router.push(`/post/${data.slug}`);
     } catch (error) {
       setPublishError('Something went wrong');
     }
@@ -98,53 +129,59 @@ export default function CreatePostPage() {
 
   if (isSignedIn && user?.publicMetadata?.isAdmin) {
     return (
-      <div className="p-3 max-w-3xl mx-auto min-h-screen">
-        <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <div className="p-4 max-w-3xl mx-auto min-h-screen">
+        <h1 className="text-center text-3xl my-7 font-semibold">Create a Post</h1>
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          {/* Title and Category */}
           <div className="flex flex-col gap-4 sm:flex-row justify-between">
-            <TextInput
+            <Input
               type="text"
               placeholder="Title"
               required
               id="title"
               className="flex-1"
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             />
             <Select
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-              defaultValue="uncategorized"
+              onValueChange={(value) => setFormData({ ...formData, category: value })}
             >
-              <option value="uncategorized">Uncategorized</option>
-              <option value="medical">Medical</option>
-              <option value="engineering">Engineering</option>
-              <option value="law">Law</option>
-              <option value="board">Board</option>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.length > 0 ? (
+                  categories.map((cat) => (
+                    <SelectItem key={cat._id} value={cat.slug}>
+                      {cat.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem disabled value="loading">
+                    Loading...
+                  </SelectItem>
+                )}
+              </SelectContent>
             </Select>
           </div>
 
-          <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
-            <FileInput
+          {/* Image Upload */}
+          <div className="flex gap-4 items-center justify-between border-2 border-dashed border-primary p-4 rounded-md">
+            <Input
               type="file"
               accept="image/*"
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
             />
             <Button
               type="button"
-              color="purple"
-              size="sm"
-              outline
+              variant="outline"
+              disabled={!!imageUploadProgress}
               onClick={handleUploadImage}
-              disabled={imageUploadProgress}
             >
               {imageUploadProgress ? (
-                <div className="w-16 h-16">
+                <div className="w-12 h-12">
                   <CircularProgressbar
                     value={imageUploadProgress}
-                    text={`${imageUploadProgress || 0}%`}
+                    text={`${imageUploadProgress}%`}
                   />
                 </div>
               ) : (
@@ -153,29 +190,41 @@ export default function CreatePostPage() {
             </Button>
           </div>
 
-          {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
+          {imageUploadError && (
+            <Alert variant="destructive">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{imageUploadError}</AlertDescription>
+            </Alert>
+          )}
+
           {formData.image && (
             <img
               src={formData.image}
-              alt="upload"
-              className="w-full h-72 object-cover"
+              alt="Uploaded"
+              className="w-full h-72 object-cover rounded-md"
             />
           )}
 
+          {/* Content Editor */}
           <ReactQuill
             theme="snow"
             placeholder="Write something..."
             className="h-72 mb-12"
-            required
-            onChange={(value) =>
-              setFormData({ ...formData, content: value })
-            }
+            onChange={(value) => setFormData({ ...formData, content: value })}
           />
-          <Button type="submit" color="purple">
+
+          {/* Publish Button */}
+          <Button type="submit" className="w-full">
             Publish
           </Button>
 
-          {publishError && <Alert color="failure">{publishError}</Alert>}
+          {/* Error if publishing fails */}
+          {publishError && (
+            <Alert variant="destructive">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{publishError}</AlertDescription>
+            </Alert>
+          )}
         </form>
       </div>
     );

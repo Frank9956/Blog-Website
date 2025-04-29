@@ -1,14 +1,10 @@
 import Link from 'next/link';
 import RecentPosts from './components/RecentPosts';
-import Sidebar from './components/sidebar';  // Import Sidebar Component
+import Sidebar from './components/Sidebar';  // Import Sidebar Component
 
 export default function Home() {
   return (
     <div className="flex min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      {/* Sidebar */}
-      {/* Use Sidebar Component */}
-
-      {/* Main Content */}
       <main className="w-full md:w-[100%] p-6 flex flex-col gap-10">
         <div className="mx-10">
           <h1 className="text-4xl font-bold mb-2">Latest Education News</h1>

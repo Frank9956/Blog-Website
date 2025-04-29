@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import { useTheme } from 'next-themes';
 import { Moon, Sun, Search, Menu } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
 export default function Header() {
+  const { user } = useUser(); // To access current user
   const path = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -36,7 +37,7 @@ export default function Header() {
     e.preventDefault();
     const urlParams = new URLSearchParams(searchParams);
     urlParams.set('searchTerm', searchTerm);
-    router.push(`/search?${urlParams.toString()}`);
+    router.push(`/${urlParams.toString()}`);
   };
 
   return (
@@ -53,26 +54,20 @@ export default function Header() {
               className=""
             />
           </Link>
-  
+
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6 font-medium text-lg">
-            <Link href="/" className={`${path === '/' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}>
-              Home
-            </Link>
-            <Link href="/medical" className={`${path === '/medical' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}>
-              Medical
-            </Link>
             <Link href="/engineering" className={`${path === '/engineering' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}>
-              Engineering
+              NEET College Predictor
             </Link>
             <Link href="/law" className={`${path === '/law' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}>
-              Law
+              NEET Rank Predictor
             </Link>
             <Link href="/about" className={`${path === '/about' ? 'font-bold text-orange-600' : 'hover:text-orange-600'}`}>
               About Us
             </Link>
           </nav>
-  
+
           {/* Search, Theme, Auth */}
           <div className="flex items-center gap-4 ml-auto">
             {/* Search */}
@@ -93,7 +88,7 @@ export default function Header() {
                 <Search className="w-5 h-5" />
               </Button>
             </form>
-  
+
             {/* Theme Toggle */}
             {mounted && (
               <Button
@@ -109,7 +104,7 @@ export default function Header() {
                 )}
               </Button>
             )}
-  
+
             {/* Auth */}
             <SignedIn>
               <UserButton
@@ -119,14 +114,18 @@ export default function Header() {
                 }}
               />
             </SignedIn>
+
+            {/* Sign In - Only shown for admins trying to access /dashboard */}
             <SignedOut>
-              <Link href="/sign-in">
-                <Button variant="outline" className="text-black dark:text-white border-black text-lg">
-                  Sign In
-                </Button>
-              </Link>
+              {path.startsWith('/dashboard') && user?.role === 'admin' && (
+                <Link href="/sign-in">
+                  <Button variant="outline" className="text-black dark:text-white border-black text-lg">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
             </SignedOut>
-  
+
             {/* Mobile Menu */}
             <Button
               variant="ghost"
@@ -137,7 +136,7 @@ export default function Header() {
             </Button>
           </div>
         </div>
-  
+
         {/* Mobile Navigation */}
         {isOpen && (
           <div className="md:hidden mt-3 flex flex-col gap-3 text-black dark:text-white bg-white dark:bg-black p-4 rounded-md">
@@ -149,7 +148,7 @@ export default function Header() {
           </div>
         )}
       </header>
-  
+
       {/* Invisible spacer */}
       <div className="h-[80px]" />
     </>

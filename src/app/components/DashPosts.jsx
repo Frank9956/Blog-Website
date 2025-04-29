@@ -79,7 +79,7 @@ export default function DashPosts() {
     <div className="flex justify-center w-full p-4 bg-white text-black dark:bg-black dark:text-white">
       <div className="w-full max-w-7xl relative">
         {/* New Post Button */}
-        <Link href="/dashboard/create-post">
+        <Link href="dashboard/create-post">
           <button className="absolute top-4 right-4 z-10 px-5 py-2 rounded-md text-base font-medium bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100">
             New Post
           </button>

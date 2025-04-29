@@ -22,3 +22,4 @@ const CategorySchema = new mongoose.Schema({
 
 // If already compiled, use the existing model (important for Next.js hot reloading)
 export const Category = mongoose.models.Category || mongoose.model("Category", CategorySchema);
+export default Category;
