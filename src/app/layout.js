@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
                   <Sidebar />
                 </div>
 
-                <main className="flex-1 h-[calc(100vh-80px)] overflow-y-auto no-scrollbar">
+                <main className="flex-1 pt-5 h-[calc(100vh-80px)] overflow-y-auto no-scrollbar">
                   {children}
                 </main>
               </div>
