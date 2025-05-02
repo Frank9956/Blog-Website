@@ -30,7 +30,7 @@ export default function About() {
                       <p>
                           Learn more about how we can assist you by visiting our website:{" "}
                           <a
-                              href="https://www.rmgrouponline.com"
+                              href="https://rmgoe.org/"
                               target="_blank"
                               className='text-teal-500 hover:underline'
                           >
