@@ -1,16 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { FaBook } from 'react-icons/fa';
-import PostCard from '../components/PostCard'; // Assuming you have this component for rendering posts
+import { usePathname } from 'next/navigation';  // Import usePathname to get the current path
+import Sidepost from '../components/Sidepost'; // Assuming you have this component for rendering posts
 
 export default function AllPosts({ limit }) {
   const [categories, setCategories] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // To handle errors
-
+  
+  const pathname = usePathname(); // Get the current path
+  // Condition to check if we are on the dashboard page
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
+    return (<div className="w-[0%]"></div>);
+  }
+  
   useEffect(() => {
     // Fetch categories
     const fetchCategories = async () => {
@@ -22,6 +27,7 @@ export default function AllPosts({ limit }) {
         console.error('Error fetching categories:', error);
       }
     };
+
 
     // Fetch posts
     const fetchPosts = async () => {
@@ -58,7 +64,7 @@ export default function AllPosts({ limit }) {
 
   // While loading, show loading spinner
   if (loading) {
-    return <div className="text-center text-xl">Loading...</div>;
+    return <div className="text-center text-xl"></div>;
   }
 
   // If there's an error, show an error message
@@ -68,18 +74,21 @@ export default function AllPosts({ limit }) {
 
   // If no posts are found
   if (!posts || posts.length === 0) {
-    return <div className="text-center text-xl">No posts found.</div>;
+    return <div className="text-center text-xl"></div>;
   }
 
+  
+
   return (
-    <div className="flex flex-col justify-center items-center mb-5 px-4 sm:px-0">
+    <div className="md:w-100 mr-4">
+    <div className="flex flex-col pl-4 justify-center items-center mb-5">
       <div className="flex flex-wrap gap-5 mt-5 justify-center">
         {/* Render posts */}
         {posts.map((post) => (
-          <PostCard key={post._id} post={post} />
+          <Sidepost key={post._id} post={post} />
         ))}
       </div>
     </div>
+    </div>
   );
-  
 }

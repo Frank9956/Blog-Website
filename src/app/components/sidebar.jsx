@@ -30,10 +30,10 @@ export default function Sidebar() {
 
 
   return (
-    <div className="md:w-100">
+    <div className="md:w-100 mr-2">
 
 
-      <aside className="w-[100%] hidden md:block sticky top-0 max-h-screen border-r border-gray-300 dark:border-gray-700 p-6 pl-15">
+      <aside className="w-[100%] hidden md:block sticky top-0 max-h-screen dark:border-gray-700 p-6 pl-15">
         <div className="space-y-3">
           {categories.length > 0 ? (
             categories.map((cat) => (
