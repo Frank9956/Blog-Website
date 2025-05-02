@@ -34,7 +34,7 @@ export default function About() {
                               target="_blank"
                               className='text-teal-500 hover:underline'
                           >
-                              www.rmgrouponline.com
+                            rmgoe.org
                           </a>
                       </p>
                   </div>
