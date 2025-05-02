@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function PostCard({ post }) {
   return (
-    <div className="group relative w-full sm:w-[300px] h-[360px] overflow-hidden rounded-lg border border-grey-300 hover:border-white transition-all duration-300 bg-white dark:bg-black">
+    <div className="group relative w-full sm:w-[300px] h-[340px] overflow-hidden rounded-lg border border-grey-300 hover:border-white transition-all duration-300 bg-white dark:bg-black">
       {/* Image Link */}
       <Link href={`/${post.category}/${post.slug}`} className="block">
         <img

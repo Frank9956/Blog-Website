@@ -53,7 +53,7 @@ export default function RootLayout({ children }) {
                 </div>
 
                 {/* Page Content */}
-                <main className="flex-1 pt-5 h-auto lg:h-[calc(100vh-80px)] overflow-y-auto no-scrollbar">
+                <main className="flex-1 pt-5 h-auto lg:h-[calc(100vh-60px)] overflow-y-auto no-scrollbar">
                   {children}
                 </main>
 
