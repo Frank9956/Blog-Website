@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import RecentPosts from './components/RecentPosts';
 import useIsMobile from './hooks/useIsMobile'; // adjust path if needed
 

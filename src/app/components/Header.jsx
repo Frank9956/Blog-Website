@@ -81,24 +81,10 @@ export default function Header() {
 
         {/* Right Side */}
         <div className="flex items-center gap-4 ml-auto">
-          {/* Search */}
-          <form onSubmit={handleSubmit} className="hidden lg:flex items-center space-x-3">
-            <Input
-              className="bg-background text-grey  placeholder:text-gray-500 text-lg px-4 py-2"
-              variant="ghost"
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Button type="submit" variant="ghost" size="icon">
-              <Search className="w-7 h-7" />
-            </Button>
-          </form>
 
           {/* Theme Toggle */}
           {mounted && (
-            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+            <Button variant="ghost" className="border border-gray-300 dark:border-gray-600" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
               {theme === 'dark' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
             </Button>
           )}

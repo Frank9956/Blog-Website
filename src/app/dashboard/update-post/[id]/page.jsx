@@ -170,7 +170,7 @@ export default function UpdatePost() {
             </Select>
           </div>
 
-          <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
+          <div className="flex gap-4 items-center justify-between rounded-md">
             <Input
               type="file"
               accept="image/*"
@@ -179,14 +179,20 @@ export default function UpdatePost() {
             <Button
               type="button"
               variant="outline"
+              disabled={!!imageUploadProgress}
               onClick={handleUploadImage}
-              disabled={imageUploadProgress}
+              className="w-36 h-12 flex items-center justify-center"
             >
               {imageUploadProgress ? (
-                <div className="w-16 h-16">
+                <div style={{ width: 50, height: 50 }}>
                   <CircularProgressbar
                     value={imageUploadProgress}
-                    text={`${imageUploadProgress || 0}%`}
+                    text={`${imageUploadProgress}%`}
+                    styles={{
+                      root: { width: '100%', height: '100%' },
+                      path: { stroke: '#f97316' },
+                      text: { fontSize: '18px', fill: '#f97316' },
+                    }}
                   />
                 </div>
               ) : (

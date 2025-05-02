@@ -33,19 +33,15 @@ export default function FooterCom() {
               <ul className="space-y-1">
                 <li>
                   <Link
-                    href="https://www.100jsprojects.com"
+                    href="https://www.rmgoe.org"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:underline"
                   >
-                    RM Group
+                    RM Group <br /> of Education
                   </Link>
                 </li>
-                <li>
-                  <Link href="/about" className="hover:underline">
-                    of Education
-                  </Link>
-                </li>
+                
               </ul>
             </div>
 

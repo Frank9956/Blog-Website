@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
-            <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen flex flex-col">
+            <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen flex flex-col ">
               {/* Header */}
               <div className="fixed bg-transparent top-0 left-0 w-full z-50">
                 <Header />
@@ -59,7 +59,7 @@ export default function RootLayout({ children }) {
 
                 {/* Sidenews */}
                 <div className="w-full lg:w-[auto] h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
-                  <Sidenews />
+                  <Sidenews limit= {4}  />
                 </div>
               </div>
 

@@ -44,7 +44,6 @@ export default function CreatePostPage() {
   const [publishError, setPublishError] = useState(null);
   const [categories, setCategories] = useState([]);
 
-  // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -59,7 +58,6 @@ export default function CreatePostPage() {
         console.error('Error fetching categories:', error);
       }
     };
-
     fetchCategories();
   }, []);
 
@@ -129,7 +127,7 @@ export default function CreatePostPage() {
 
   if (isSignedIn && user?.publicMetadata?.isAdmin) {
     return (
-      <div className="p-4 max-w-3xl mx-auto min-h-screen">
+      <div className="p-4 max-w-3xl mx-auto min-h-screen no-scrollbar">
         <h1 className="text-center text-3xl my-7 font-semibold">Create a Post</h1>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           {/* Title and Category */}
@@ -165,7 +163,7 @@ export default function CreatePostPage() {
           </div>
 
           {/* Image Upload */}
-          <div className="flex gap-4 items-center justify-between border-2 border-dashed border-primary p-4 rounded-md">
+          <div className="flex gap-4 items-center justify-between rounded-md">
             <Input
               type="file"
               accept="image/*"
@@ -176,12 +174,18 @@ export default function CreatePostPage() {
               variant="outline"
               disabled={!!imageUploadProgress}
               onClick={handleUploadImage}
+              className="w-36 h-12 flex items-center justify-center"
             >
               {imageUploadProgress ? (
-                <div className="w-12 h-12">
+                <div style={{ width: 50, height: 50 }}>
                   <CircularProgressbar
                     value={imageUploadProgress}
                     text={`${imageUploadProgress}%`}
+                    styles={{
+                      root: { width: '100%', height: '100%' },
+                      path: { stroke: '#f97316' },
+                      text: { fontSize: '18px', fill: '#f97316' },
+                    }}
                   />
                 </div>
               ) : (
@@ -190,6 +194,7 @@ export default function CreatePostPage() {
             </Button>
           </div>
 
+          {/* Upload Error */}
           {imageUploadError && (
             <Alert variant="destructive">
               <AlertTitle>Error</AlertTitle>
@@ -197,6 +202,7 @@ export default function CreatePostPage() {
             </Alert>
           )}
 
+          {/* Uploaded Image Preview */}
           {formData.image && (
             <img
               src={formData.image}
@@ -218,7 +224,7 @@ export default function CreatePostPage() {
             Publish
           </Button>
 
-          {/* Error if publishing fails */}
+          {/* Publish Error */}
           {publishError && (
             <Alert variant="destructive">
               <AlertTitle>Error</AlertTitle>
