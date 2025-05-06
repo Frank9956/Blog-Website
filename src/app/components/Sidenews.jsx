@@ -1,63 +1,36 @@
-'use client'
-
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { headers } from 'next/headers';
 import Sidepost from '../components/Sidepost';
 
-export default function AllPosts({ limit }) {
-  const pathname = usePathname(); // ✅ Move hook to the top
+async function fetchPosts(limit = 4) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/post/get`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ limit, category: '', order: '' }),
+      cache: 'no-store',
+    });
 
-  const [categories, setCategories] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    if (!res.ok) throw new Error(`Failed to fetch posts: ${res.statusText}`);
+    const data = await res.json();
+    return data.posts || [];
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return [];
+  }
+}
 
-  const shouldHide = pathname.startsWith('/dashboard') || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up');
-
-  useEffect(() => {
-    if (shouldHide) return; // Don't fetch if we won't render
-
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch('/api/category');
-        const data = await res.json();
-        setCategories(data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    const fetchPosts = async () => {
-      try {
-        const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/post/get`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ limit, category: '', order: '' }),
-        });
-
-        if (!result.ok) throw new Error(`Failed to fetch: ${result.statusText}`);
-
-        const data = await result.json();
-        setPosts(data.posts || []);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-    fetchPosts();
-  }, [limit, shouldHide]);
+export default async function AllPosts({ limit = 4 }) {
+  const pathname = headers().get('x-next-url') || '';
+  const shouldHide =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/sign-in') ||
+    pathname.startsWith('/sign-up');
 
   if (shouldHide) return <div className="w-[0%]" />;
 
-  if (loading) return <div className="text-center text-xl"></div>;
+  const posts = await fetchPosts(limit);
 
-  if (error) return <div className="text-center text-xl text-red-500">Error: {error}</div>;
-
-  if (!posts || posts.length === 0) return <div className="text-center text-xl"></div>;
+  if (!posts.length) return <div className="text-center text-xl">No posts found.</div>;
 
   return (
     <div className="md:w-100 mr-4">
