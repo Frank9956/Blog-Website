@@ -68,7 +68,7 @@ export default function AllPosts({ limit }) {
 
   // If no posts are found
   if (!posts || posts.length === 0) {
-    return <div className="text-center text-xl">No posts found.</div>;
+    return <div className="text-center text-xl"></div>;
   }
 
   return (
