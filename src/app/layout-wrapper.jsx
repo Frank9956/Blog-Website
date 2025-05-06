@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import Sidebar from './components/Sidebar';
+import Sidebar from './components/sidebar';
 import Sidenews from './components/Sidenews';
 
 export default async function LayoutWrapper({ children }) {
