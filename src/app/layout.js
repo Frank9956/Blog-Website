@@ -47,7 +47,7 @@ export default function RootLayout({ children }) {
 
               {/* Main Layout */}
               <div className="flex flex-col lg:flex-row flex-1 pt-[60px] w-full no-scrollbar">
-                <LayoutWrapper>{children}</LayoutWrapper>
+                {children}
               </div>
 
               {/* Footer */}

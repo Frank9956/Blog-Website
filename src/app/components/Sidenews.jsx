@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+
 import Sidepost from '../components/Sidepost';
 
 async function fetchPosts(limit = 4) {
@@ -20,14 +20,9 @@ async function fetchPosts(limit = 4) {
 }
 
 export default async function AllPosts({ limit = 4 }) {
-  const headersList = await headers(); // 👈 await here
-  const pathname = headersList.get('x-next-url') || '';
-  const shouldHide =
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/sign-in') ||
-    pathname.startsWith('/sign-up');
+ 
 
-  if (shouldHide) return <div className="w-[0%]" />;
+  
 
   const posts = await fetchPosts(limit);
 

@@ -1,18 +1,72 @@
-import dynamic from 'next/dynamic';
+import PostCard from '@/app/components/PostCard';
+import Sidebar from '@/app/components/Sidebar';
+import Sidenews from '@/app/components/Sidenews';
+
+export const dynamic = 'force-dynamic'; // ensures fresh data every request (SSR)
 
 export async function generateMetadata({ params }) {
-  const { category } = await params; // 👈 must await
-  const slug = category.toUpperCase();
-
+  const category = params.category.toUpperCase();
   return {
-    title: `${slug} - Entrance Fever`,
-    description: `Explore posts in the ${slug} category on Entrance Fever.`,
+    title: `${category} - Entrance Fever`,
+    description: `Browse latest articles in ${category}.`,
   };
 }
 
-const CategoryPageClient = dynamic(() => import('@/app/components/CategoryPageClient'));
+export default async function CategoryPage({ params }) {
+  const category = params.category;
 
-export default async function CategoryPageWrapper({ params }) {
-  const { category } = await params; // 👈 must await
-  return <CategoryPageClient category={category} />;
+  // Fetch posts and category details in parallel
+  const [postRes, catRes] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_URL}/api/post/get`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ limit: 9, category, order: 'desc' }),
+      cache: 'no-store',
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_URL}/api/category/get`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: category }),
+      cache: 'no-store',
+    }),
+  ]);
+
+  const postData = await postRes.json();
+  const catData = await catRes.json();
+
+  const posts = postData.posts || [];
+  const categoryName = catData.name || category;
+  const categoryDescription = catData.description || 'No description available.';
+
+  return (
+    <div className="flex">
+      {/* Sidebar */}
+      <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
+        <Sidebar />
+      </div>
+
+      {/* Main Content */}
+      <main className="max-w-5xl flex-1 pt-5 h-auto lg:h-[calc(100vh-60px)] overflow-y-auto no-scrollbar">
+        <div className="mx-10">
+          <h1 className="text-4xl font-bold mb-4 capitalize">{categoryName}</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {categoryDescription}
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            {posts.length === 0 ? (
+              <p className="text-xl text-gray-500">No posts found.</p>
+            ) : (
+              posts.map((post) => <PostCard key={post._id} post={post} />)
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* Side News */}
+      <div className="w-full lg:w-[auto] r-0 h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
+        <Sidenews limit={4} />
+      </div>
+    </div>
+  );
 }

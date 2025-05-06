@@ -1,8 +1,10 @@
-// Page component for [slug]/page.tsx
 
-import RecentPosts from '@/app/components/RecentPosts';
+import RecentPostsWrapper from '@/app/components/RecentPostsWrapper';
 import { Button } from 'flowbite-react';
 import Link from 'next/link';
+import Sidebar from '@/app/components/sidebar';
+import Sidenews from '@/app/components/Sidenews';
+
 
 export async function generateMetadata({ params }) {
   try {
@@ -51,46 +53,62 @@ export default async function PostPage({ params }) {
   }
 
   return (
-    <main className='px-3 flex flex-col max-w-5xl mx-auto min-h-screen'>
-      {/* Title */}
-      <h1 className='text-3xl px-3 text-left font-bold max-w-5xl lg:text-4xl'>
-        {post?.title}
-      </h1>
+    <div className="flex">
+      {/* Conditionally render Sidebar based on hideSidebar */}
+      
+        <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
+          <Sidebar />
+        </div>
+    
 
-      {/* Category Button */}
-      <div className="flex p-3">
-        <Link href={`/${post.category}`} className='self-center'>
-          <Button color='gray' pill size='xs'>
-            {post?.category}
-          </Button>
-        </Link>
-      </div>
+      {/* Main Page Content */}
+      <main className='px-3 flex flex-col max-w-5xl mx-auto min-h-screen'>
+        {/* Title */}
+        <h1 className='text-3xl px-3 text-left font-bold max-w-5xl lg:text-4xl'>
+          {post?.title}
+        </h1>
 
-      {/* Image */}
-      <img
-        src={post?.image}
-        alt={post?.title}
-        className='mt-10 p-3 max-h-[600px] w-full object-cover'
-      />
+        {/* Category Button */}
+        <div className="flex p-3">
+          <Link href={`/${post.category}`} className='self-center'>
+            <Button color='gray' pill size='xs'>
+              {post?.category}
+            </Button>
+          </Link>
+        </div>
 
-      {/* Info Section */}
-      <div className='flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-5xl text-xs'>
-        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-        <span className='italic'>
-          {(post?.content?.length / 1000).toFixed(0)} mins read
-        </span>
-      </div>
+        {/* Image */}
+        <img
+          src={post?.image}
+          alt={post?.title}
+          className='mt-10 p-3 max-h-[600px] w-full object-cover'
+        />
 
-      {/* Content */}
-      <div
-        className='p-3 max-w-5xl mx-auto w-full post-content bg-white dark:bg-transparent text-black dark:text-white rounded-md'
-        dangerouslySetInnerHTML={{ __html: post?.content }}
-      ></div>
+        {/* Info Section */}
+        <div className='flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-5xl text-xs'>
+          <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+          <span className='italic'>
+            {(post?.content?.length / 1000).toFixed(0)} mins read
+          </span>
+        </div>
 
-      {/* Recent Posts */}
-      <div className='max-w-5xl mx-auto w-full dark:bg-transparent'>
-        <RecentPosts limit={3} />
-      </div>
-    </main>
-  );
-}
+        {/* Content */}
+        <div
+          className='p-3 max-w-5xl mx-auto w-full post-content bg-white dark:bg-transparent text-black dark:text-white rounded-md'
+          dangerouslySetInnerHTML={{ __html: post?.content }}
+        ></div>
+
+        {/* Recent Posts */}
+        <div className='max-w-5xl mx-auto w-full dark:bg-transparent'>
+          <RecentPostsWrapper limit={3} />
+        </div>
+      </main>
+
+      {/* Conditionally render Sidenews */}
+      
+        <div className="w-full lg:w-[auto] r-0 h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
+          <Sidenews limit={4} />
+        </div>
+      
+    </div>
+)}
