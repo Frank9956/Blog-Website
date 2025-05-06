@@ -23,13 +23,17 @@ export default async function Sidebar() {
         <div className="space-y-3">
           {categories.length > 0 ? (
             categories.map((cat) => (
-              <div key={cat._id} className="flex justify-between items-center border p-3 rounded-md">
+              <div key={cat._id}>
                 <Link
                   href={`/${cat.slug}`}
-                  className="flex items-center gap-4 font-bold text-lg hover:text-blue-500"
+                  className="font-bold text-lg hover:text-blue-500 block"
                 >
-                  <FaGraduationCap className="text-xl text-orange-500" />
-                  <span>{cat.name}</span>
+                  <div className="flex  justify-between items-center border p-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <div className="flex gap-2 items-center">
+                      <FaGraduationCap className="text-xl text-orange-500" />
+                      <span className="ml-1">{cat.name}</span>
+                    </div>
+                  </div>
                 </Link>
               </div>
             ))
