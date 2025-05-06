@@ -41,7 +41,7 @@ export default async function AllPosts({ limit = 4 }) {
   ]);
 
   if (!posts || posts.length === 0) {
-    return <div className="text-center text-xl">No posts found.</div>;
+    return <div className="text-center text-xl"></div>;
   }
 
   return (
