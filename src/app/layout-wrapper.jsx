@@ -1,21 +1,10 @@
-import { headers } from 'next/headers';
 import Sidebar from './components/sidebar';
 import Sidenews from './components/Sidenews';
 
-export default async function LayoutWrapper({ children }) {
-  // Await headers before accessing 'x-next-url'
-  const headersList = await headers();
-  const pathname = headersList.get('x-next-url') || '';
-  //
-  // Logic to hide sidebar for specific routes
-  const hideSidebar =
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/sign-in') ||
-    pathname.startsWith('/sign-up');
-
+export default function LayoutWrapper({ children, hideSidebar }) {
   return (
     <>
-      {/* Conditionally render Sidebar and Sidenews based on the current path */}
+      {/* Conditionally render Sidebar based on hideSidebar prop */}
       {!hideSidebar && (
         <div className="w-full lg:w-[auto] h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
           <Sidebar />
@@ -35,4 +24,20 @@ export default async function LayoutWrapper({ children }) {
       )}
     </>
   );
+}
+
+// This function runs on the server-side
+export async function getServerSideProps({ req }) {
+  const pathname = req.url || '';
+
+  // Check if the current route should hide the sidebar
+  const hideSidebar = pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/sign-in') ||
+    pathname.startsWith('/sign-up');
+
+  return {
+    props: {
+      hideSidebar, // Pass this value as a prop to the component
+    },
+  };
 }

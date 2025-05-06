@@ -20,7 +20,8 @@ async function fetchPosts(limit = 4) {
 }
 
 export default async function AllPosts({ limit = 4 }) {
-  const pathname = headers().get('x-next-url') || '';
+  const headersList = await headers(); // 👈 await here
+  const pathname = headersList.get('x-next-url') || '';
   const shouldHide =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/sign-in') ||

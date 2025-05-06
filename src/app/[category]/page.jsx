@@ -1,8 +1,8 @@
-
 import dynamic from 'next/dynamic';
 
 export async function generateMetadata({ params }) {
-  const slug = params.category.toUpperCase();
+  const { category } = await params; // 👈 must await
+  const slug = category.toUpperCase();
 
   return {
     title: `${slug} - Entrance Fever`,
@@ -10,10 +10,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-const CategoryPageClient = dynamic(() => import('@/app/components/CategoryPageClient'), {
-  
-});
+const CategoryPageClient = dynamic(() => import('@/app/components/CategoryPageClient'));
 
-export default function CategoryPageWrapper({ params }) {
-  return <CategoryPageClient category={params.category} />;
+export default async function CategoryPageWrapper({ params }) {
+  const { category } = await params; // 👈 must await
+  return <CategoryPageClient category={category} />;
 }
