@@ -6,7 +6,7 @@ export default async function LayoutWrapper({ children }) {
   // Await headers before accessing 'x-next-url'
   const headersList = await headers();
   const pathname = headersList.get('x-next-url') || '';
-  
+  //
   // Logic to hide sidebar for specific routes
   const hideSidebar =
     pathname.startsWith('/dashboard') ||
