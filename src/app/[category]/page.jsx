@@ -1,5 +1,5 @@
 import PostCard from '@/app/components/PostCard';
-import Sidebar from '@/app/components/Sidebar';
+import Sidebar from '@/app/components/sidebar';
 import Sidenews from '@/app/components/Sidenews';
 
 export const dynamic = 'force-dynamic'; // ensures fresh data every request (SSR)
