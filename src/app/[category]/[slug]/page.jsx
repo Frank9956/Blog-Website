@@ -1,10 +1,8 @@
-
 import RecentPostsWrapper from '@/app/components/RecentPostsWrapper';
 import { Button } from 'flowbite-react';
 import Link from 'next/link';
 import CategoryWrapper from '@/app/components/CategoryWrapper';
 import Sidenews from '@/app/components/Sidenews';
-
 
 export async function generateMetadata({ params }) {
   try {
@@ -20,7 +18,7 @@ export async function generateMetadata({ params }) {
       title: post?.title || 'Post not found',
       description: post?.content?.slice(0, 150) || 'Read this post on our blog',
     };
-  } catch (error) {
+  } catch {
     return {
       title: 'Post not found',
       description: 'An error occurred while loading the post.',
@@ -38,14 +36,14 @@ export default async function PostPage({ params }) {
     });
     const data = await result.json();
     post = data.posts[0];
-  } catch (error) {
+  } catch {
     post = { title: 'Failed to load post' };
   }
 
   if (!post || post.title === 'Failed to load post') {
     return (
-      <main className='p-3 flex flex-col max-w-6xl mx-auto min-h-screen'>
-        <h2 className='text-3xl mt-10 p-3 text-center font-serif max-w-5xl mx-auto lg:text-4xl'>
+      <main className='p-4 flex flex-col max-w-6xl mx-auto min-h-screen'>
+        <h2 className='text-2xl sm:text-3xl mt-10 text-center font-serif'>
           Post not found
         </h2>
       </main>
@@ -53,61 +51,55 @@ export default async function PostPage({ params }) {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row">
-      {/* Conditionally render Sidebar based on hideSidebar */}
-      
-      <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
+    <div className="flex flex-col lg:flex-row min-h-screen">
+      {/* Sidebar */}
+      <aside className="w-full lg:w-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
         <CategoryWrapper />
-      </div>
- 
-      {/* Main Page Content */}
-      <main className='px-3 flex flex-col max-w-5xl mx-auto min-h-screen'>
-        {/* Title */}
-        <h1 className='text-3xl px-3 text-left font-bold max-w-5xl lg:text-4xl'>
+      </aside>
+
+      {/* Main Content */}
+      <main className='flex-1 px-4 sm:px-6 lg:px-10 py-6'>
+        <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold'>
           {post?.title}
         </h1>
 
-        {/* Category Button */}
-        <div className="flex p-3">
-          <Link href={`/${post.category}`} className='self-center'>
+        <div className="my-4">
+          <Link href={`/${post.category}`}>
             <Button color='gray' pill size='xs'>
               {post?.category}
             </Button>
           </Link>
         </div>
 
-        {/* Image */}
-        <img
-          src={post?.image}
-          alt={post?.title}
-          className='mt-10 p-3 max-h-[600px] w-full object-cover'
-        />
+        <div className="my-4">
+          <img
+            src={post?.image || '/default-image.jpg'}
+            alt={post?.title}
+            className='w-full max-h-[500px] object-cover rounded-lg shadow'
+          />
+        </div>
 
-        {/* Info Section */}
-        <div className='flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-5xl text-xs'>
+        <div className='flex justify-between text-sm text-gray-500 border-b pb-2 mb-4'>
           <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           <span className='italic'>
             {(post?.content?.length / 1000).toFixed(0)} mins read
           </span>
         </div>
 
-        {/* Content */}
         <div
-          className='p-3 max-w-5xl mx-auto w-full post-content bg-white dark:bg-transparent text-black dark:text-white rounded-md'
+          className='prose dark:prose-invert max-w-full'
           dangerouslySetInnerHTML={{ __html: post?.content }}
         ></div>
 
-        {/* Recent Posts */}
-        <div className='max-w-5xl mx-auto w-full dark:bg-transparent'>
+        <div className='mt-10'>
           <RecentPostsWrapper limit={3} />
         </div>
       </main>
 
-      {/* Conditionally render Sidenews */}
-      
-        <div className="w-full lg:w-[auto] r-0 h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
-          <Sidenews limit={4} />
-        </div>
-      
+      {/* Side News */}
+      <aside className="w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
+        <Sidenews limit={4} />
+      </aside>
     </div>
-)}
+  );
+}

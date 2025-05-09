@@ -16,16 +16,18 @@ export default function Home() {
       </div>
 
 
-      {/* Main Page Content */}
-      <main className="max-w-5xl flex-1 pt-5 h-auto lg:h-[calc(100vh-60px)] overflow-y-auto no-scrollbar">
-        <div>
-          <h1 className="text-4xl font-bold mb-2 mx-10">Latest Education News</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8 mx-10">
+      <main className="flex-1 py-5 h-auto lg:h-[calc(100vh-60px)] overflow-y-auto no-scrollbar w-full">
+        <div className="px-4 sm:px-6 lg:px-10">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
+            Latest Education News
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6 sm:mb-8">
             Stay updated with the latest developments in Medical, Engineering, Law, and Board education.
           </p>
           <RecentPostsWrapper limit={postLimit} />
         </div>
       </main>
+
 
       {/* Conditionally render Sidenews */}
 
