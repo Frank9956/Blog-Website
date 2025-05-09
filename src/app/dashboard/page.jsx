@@ -9,6 +9,7 @@ import DashPosts from '../components/DashPosts';
 import DashUsers from '../components/DashUsers';
 import DashboardComp from '../components/DashboardComp';
 import DashCategories from '../components/DashCategories';
+import DashAuthors from '../components/DashAuthors';
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
@@ -44,6 +45,7 @@ export default function Dashboard() {
       {tab === 'users' && <DashUsers />}
       {tab === 'dash' && <DashboardComp />}
       {tab === 'categories' && <DashCategories />}
+      {tab === 'authors' && <DashAuthors />}
     </div>
   );
 }

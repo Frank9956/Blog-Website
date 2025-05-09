@@ -49,6 +49,7 @@ export default function DashSidebar() {
     { label: 'Posts', icon: HiDocumentText, href: '/dashboard?tab=posts', adminOnly: true },
     { label: 'Categories', icon: HiDocumentText, href: '/dashboard?tab=categories', adminOnly: true },
     { label: 'Users', icon: HiOutlineUserGroup, href: '/dashboard?tab=users', adminOnly: true },
+    { label: 'Authors', icon: HiOutlineUserGroup, href: '/dashboard?tab=authors', adminOnly: true },
   ];
 
   return (

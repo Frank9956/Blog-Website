@@ -43,22 +43,36 @@ export default function CreatePostPage() {
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [authors, setAuthors] = useState([]);
 
+  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await fetch('/api/category');
         const data = await res.json();
-        if (res.ok) {
-          setCategories(data);
-        } else {
-          console.error('Failed to load categories:', data.message);
-        }
+        if (res.ok) setCategories(data);
+        else console.error('Failed to load categories:', data.message);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
     fetchCategories();
+  }, []);
+
+  // Fetch authors
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      try {
+        const res = await fetch('/api/authors');
+        const data = await res.json();
+        if (res.ok) setAuthors(data);
+        else console.error('Failed to load authors:', data.message);
+      } catch (error) {
+        console.error('Error fetching authors:', error);
+      }
+    };
+    fetchAuthors();
   }, []);
 
   const handleUploadImage = async () => {
@@ -130,16 +144,17 @@ export default function CreatePostPage() {
       <div className="p-4 max-w-3xl mx-auto min-h-screen no-scrollbar">
         <h1 className="text-center text-3xl my-7 font-semibold">Create a Post</h1>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-          {/* Title and Category */}
+          {/* Title */}
+          <Input
+            type="text"
+            placeholder="Title"
+            required
+            id="title"
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          />
+
+          {/* Category and Author */}
           <div className="flex flex-col gap-4 sm:flex-row justify-between">
-            <Input
-              type="text"
-              placeholder="Title"
-              required
-              id="title"
-              className="flex-1"
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            />
             <Select
               onValueChange={(value) => setFormData({ ...formData, category: value })}
             >
@@ -151,6 +166,27 @@ export default function CreatePostPage() {
                   categories.map((cat) => (
                     <SelectItem key={cat._id} value={cat.slug}>
                       {cat.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem disabled value="loading">
+                    Loading...
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+
+            <Select
+              onValueChange={(value) => setFormData({ ...formData, author: value })}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select an author" />
+              </SelectTrigger>
+              <SelectContent>
+                {authors.length > 0 ? (
+                  authors.map((author) => (
+                    <SelectItem key={author._id} value={author.slug}>
+                      {author.name}
                     </SelectItem>
                   ))
                 ) : (
@@ -194,7 +230,6 @@ export default function CreatePostPage() {
             </Button>
           </div>
 
-          {/* Upload Error */}
           {imageUploadError && (
             <Alert variant="destructive">
               <AlertTitle>Error</AlertTitle>
@@ -202,7 +237,6 @@ export default function CreatePostPage() {
             </Alert>
           )}
 
-          {/* Uploaded Image Preview */}
           {formData.image && (
             <img
               src={formData.image}
@@ -219,12 +253,11 @@ export default function CreatePostPage() {
             onChange={(value) => setFormData({ ...formData, content: value })}
           />
 
-          {/* Publish Button */}
+          {/* Submit */}
           <Button type="submit" className="w-full">
             Publish
           </Button>
 
-          {/* Publish Error */}
           {publishError && (
             <Alert variant="destructive">
               <AlertTitle>Error</AlertTitle>

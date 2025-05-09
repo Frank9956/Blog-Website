@@ -18,9 +18,13 @@ export default function DashPosts() {
   const [userPosts, setUserPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
+      setError(null); // Reset the error state before a new fetch attempt
       try {
         const res = await fetch('/api/post/get', {
           method: 'POST',
@@ -30,11 +34,17 @@ export default function DashPosts() {
           }),
         });
         const data = await res.json();
+        console.log(data); // Check the response data structure
         if (res.ok) {
           setUserPosts(data.posts);
+        } else {
+          setError('Failed to fetch posts');
         }
       } catch (error) {
         console.log(error.message);
+        setError('Something went wrong. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -42,6 +52,7 @@ export default function DashPosts() {
       fetchPosts();
     }
   }, [user?.publicMetadata?.isAdmin, user?.publicMetadata?.userMongoId]);
+
 
   const handleDeletePost = async () => {
     setShowModal(false);
@@ -54,26 +65,23 @@ export default function DashPosts() {
           userId: user?.publicMetadata?.userMongoId,
         }),
       });
+  
       const data = await res.json();
+      console.log('Response:', data); // Log the response data
+  
       if (res.ok) {
         const newPosts = userPosts.filter((post) => post._id !== postIdToDelete);
         setUserPosts(newPosts);
         setPostIdToDelete('');
       } else {
-        console.log(data.message);
+        setError(data.message || 'Failed to delete the post');
       }
     } catch (error) {
-      console.log(error.message);
+      console.log('Error:', error); // Log the error
+      setError('Something went wrong while deleting the post. Please try again.');
     }
   };
-
-  if (!user?.publicMetadata?.isAdmin) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full w-full py-7">
-        <h1 className="text-2xl font-semibold">You are not an admin!</h1>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="flex justify-center w-full p-4 bg-white text-black dark:bg-black dark:text-white">
@@ -85,12 +93,20 @@ export default function DashPosts() {
           </button>
         </Link>
 
-        {userPosts.length > 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center mt-20">
+            <span>Loading posts...</span>
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500 mt-20">
+            <p>{error}</p>
+          </div>
+        ) : userPosts.length > 0 ? (
           <div className="mt-16 overflow-x-auto">
             <table className="min-w-full mx-auto text-base divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-200 dark:bg-gray-800">
                 <tr>
-                  {['Date', 'Image', 'Title', 'Category', 'Delete', 'Edit'].map((heading) => (
+                  {['Date', 'Image', 'Title', 'Category', 'Author', 'Delete', 'Edit'].map((heading) => (
                     <th key={heading} className="px-4 py-4 text-left font-semibold text-black dark:text-white">
                       {heading}
                     </th>
@@ -119,6 +135,9 @@ export default function DashPosts() {
                     </td>
                     <td className="px-4 py-4 text-gray-700 dark:text-gray-300 text-base">
                       {post.category}
+                    </td>
+                    <td className="px-4 py-4 text-gray-700 dark:text-gray-300 text-base">
+                      {post.author?.name || 'Unknown'} {/* Fallback to "Unknown" if no author */}
                     </td>
                     <td className="px-4 py-4">
                       <button

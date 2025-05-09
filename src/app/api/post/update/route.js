@@ -8,6 +8,7 @@ export const PUT = async (req) => {
     await connect();
     const data = await req.json();
 
+    // Check if the user is authorized to update the post
     if (
       !user ||
       user.publicMetadata.userMongoId !== data.userMongoId ||
@@ -18,7 +19,8 @@ export const PUT = async (req) => {
       });
     }
 
-    const newPost = await Post.findByIdAndUpdate(
+    // Update the post with the new data, including the author
+    const updatedPost = await Post.findByIdAndUpdate(
       data.postId,
       {
         $set: {
@@ -26,17 +28,19 @@ export const PUT = async (req) => {
           content: data.content,
           category: data.category,
           image: data.image,
+          author: data.author, // Make sure to pass the author's ObjectId
         },
       },
       { new: true }
     );
 
-    return new Response(JSON.stringify(newPost), {
+    // Return the updated post as a response
+    return new Response(JSON.stringify(updatedPost), {
       status: 200,
     });
   } catch (error) {
-    console.log('Error creating post:', error);
-    return new Response('Error creating post', {
+    console.log('Error updating post:', error);
+    return new Response('Error updating post', {
       status: 500,
     });
   }
