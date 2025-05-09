@@ -1,7 +1,5 @@
-// app/[category]/page.jsx
-
-import PostCard from '../components/PostCard';
-import Sidebar from '@/app/components/sidebar';
+import PostCard from '@/app/components/PostCard';
+import CategoryWrapper from '@/app/components/CategoryWrapper';
 import Sidenews from '@/app/components/Sidenews';
 
 export const dynamic = 'force-dynamic'; // if you need no caching
@@ -27,9 +25,9 @@ export default async function CategoryPage({ params }) {
   const categoryDescription = `Explore recent posts in the ${categoryName} category.`;
 
   return (
-    <div className="flex">
+    <div className="flex flex-col lg:flex-row">
       <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
-        <Sidebar />
+        <CategoryWrapper />
       </div>
 
       <main className="max-w-5xl flex-1 pt-5 h-auto lg:h-[calc(100vh-60px)] overflow-y-auto no-scrollbar">

@@ -1,5 +1,5 @@
 import RecentPostsWrapper from './components/RecentPostsWrapper';
-import Sidebar from './components/sidebar';
+import CategoryWrapper from './components/CategoryWrapper';
 import Sidenews from './components/Sidenews';
 
 
@@ -9,10 +9,10 @@ export default function Home() {
   const postLimit = isMobile ? 3 : 9; // This logic can only run client-side
 
   return (
-    <div className="flex">
+    <div className="flex flex-col lg:flex-row">
 
       <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
-        <Sidebar />
+        <CategoryWrapper />
       </div>
 
 

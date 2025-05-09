@@ -1,5 +1,5 @@
 import PostCard from '@/app/components/PostCard';
-import Sidebar from '@/app/components/sidebar';
+import CategoryWrapper from '@/app/components/CategoryWrapper';
 import Sidenews from '@/app/components/Sidenews';
 
 export const dynamic = 'force-dynamic'; // ensures fresh data every request (SSR)
@@ -39,11 +39,12 @@ export default async function CategoryPage({ params }) {
   const categoryDescription = catData.description || 'No description available.';
 
   return (
-    <div className="flex">
+    <div className="flex flex-col lg:flex-row">
       {/* Sidebar */}
       <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
-        <Sidebar />
-      </div>
+              <CategoryWrapper />
+            </div>
+      
 
       {/* Main Content */}
       <main className="max-w-5xl flex-1 pt-5 h-auto lg:h-[calc(100vh-60px)] overflow-y-auto no-scrollbar">

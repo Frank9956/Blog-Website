@@ -2,7 +2,7 @@
 import RecentPostsWrapper from '@/app/components/RecentPostsWrapper';
 import { Button } from 'flowbite-react';
 import Link from 'next/link';
-import Sidebar from '@/app/components/sidebar';
+import CategoryWrapper from '@/app/components/CategoryWrapper';
 import Sidenews from '@/app/components/Sidenews';
 
 
@@ -53,14 +53,13 @@ export default async function PostPage({ params }) {
   }
 
   return (
-    <div className="flex">
+    <div className="flex flex-col lg:flex-row">
       {/* Conditionally render Sidebar based on hideSidebar */}
       
-        <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
-          <Sidebar />
-        </div>
-    
-
+      <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
+        <CategoryWrapper />
+      </div>
+ 
       {/* Main Page Content */}
       <main className='px-3 flex flex-col max-w-5xl mx-auto min-h-screen'>
         {/* Title */}

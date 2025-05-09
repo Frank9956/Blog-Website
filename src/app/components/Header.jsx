@@ -5,8 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, Search, Menu } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
@@ -18,8 +17,6 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,23 +37,6 @@ export default function Header() {
     }
     fetchCategories();
   }, []);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(searchParams);
-    const searchFromUrl = urlParams.get('searchTerm');
-    if (searchFromUrl) setSearchTerm(searchFromUrl);
-  }, [searchParams]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const urlParams = new URLSearchParams(searchParams);
-    urlParams.set('searchTerm', searchTerm);
-    router.push(`/${urlParams.toString()}`);
-  };
-
-  const handleLinkClick = () => {
-    setIsOpen(false);
-  };
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-transparent text-black dark:text-white backdrop-blur-[10px]">
@@ -81,10 +61,14 @@ export default function Header() {
 
         {/* Right Side */}
         <div className="flex items-center gap-4 ml-auto">
-
           {/* Theme Toggle */}
           {mounted && (
-            <Button variant="ghost" className="border border-gray-300 dark:border-gray-600" size="icon" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+            <Button
+              variant="ghost"
+              className="border border-gray-300 dark:border-gray-600"
+              size="icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
               {theme === 'dark' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
             </Button>
           )}
@@ -104,46 +88,29 @@ export default function Header() {
               </Link>
             )}
           </SignedOut>
-
-          {/* Mobile Menu Toggle */}
-          <Button variant="ghost" className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
-            <Menu />
-          </Button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <div
-        className={`overflow-hidden transition-all duration-300 md:hidden px-6 ${isOpen ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0 '
-          }`}
-      >
-        <div className="flex flex-col gap-2 bg-transparent backdrop-blur-[10px]  rounded-md py-4 px-4 font-bold">
-          {isLoading ? (
-            <div>Loading categories...</div>
-          ) : (
-            categories.map((category) => (
+      {/* Mobile Horizontal Category Slider
+      {!isLoading && (
+        <div className="md:hidden w-full overflow-x-auto whitespace-nowrap px-4 py-2 border-t border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-black">
+          <div className="flex space-x-4">
+            {categories.map((category) => (
               <Link
                 key={category.slug}
                 href={`/${category.slug}`}
-                onClick={handleLinkClick}
-                className={`hover:text-orange-500 transition-colors ${path === `/${category.slug}` ? 'text-orange-600' : ''
-                  }`}
+                className={`px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors ${
+                  path === `/${category.slug}`
+                    ? 'bg-orange-100 text-orange-600 border-orange-300 dark:bg-orange-900 dark:text-white'
+                    : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white border-transparent'
+                }`}
               >
                 {category.name}
               </Link>
-            ))
-          )}
-          <Link
-            href="/about"
-            onClick={handleLinkClick}
-            className={`hover:text-orange-500 transition-colors ${path === '/about' ? 'text-orange-600' : ''
-              }`}
-          >
-            About Us
-          </Link>
+            ))}
+          </div>
         </div>
-
-      </div>
+      )} */}
     </header>
   );
 }

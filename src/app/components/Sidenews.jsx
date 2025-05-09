@@ -37,6 +37,9 @@ export default async function AllPosts({ limit = 4 }) {
           ))}
         </div>
       </div>
+      
     </div>
+
+    
   );
 }
