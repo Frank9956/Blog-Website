@@ -13,16 +13,29 @@ export default function Sidebar({ categories = [] }) {
       <aside className="w-full hidden md:block sticky top-0 max-h-screen dark:border-gray-700 p-6">
         <div className="space-y-3">
           {categories.length > 0 ? (
-            categories.map((cat) => (
-              <Link key={cat._id} href={`/${cat.slug}`} className="block">
-                <div className="flex justify-between items-center border p-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <div className="flex gap-2 items-center">
-                    <FaGraduationCap className="text-xl text-orange-500" />
-                    <span className="ml-1 font-bold text-lg">{cat.name}</span>
+            categories.map((cat) => {
+              const isActive = path === `/${cat.slug}`;
+              return (
+                <Link key={cat._id} href={`/${cat.slug}`} className="block">
+                  <div
+                    className={`flex justify-between items-center border p-3 rounded-md transition-colors ${
+                      isActive
+                        ? 'bg-orange-100 text-orange-600 border-orange-300 dark:bg-orange-900 dark:text-white'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    <div className="flex gap-2 items-center">
+                      <FaGraduationCap
+                        className={`text-xl ${
+                          isActive ? 'text-orange-600 dark:text-white' : 'text-orange-500'
+                        }`}
+                      />
+                      <span className="ml-1 font-bold text-lg">{cat.name}</span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))
+                </Link>
+              );
+            })
           ) : (
             <p>No categories available.</p>
           )}
@@ -33,19 +46,22 @@ export default function Sidebar({ categories = [] }) {
       <div className="md:hidden w-full overflow-x-auto whitespace-nowrap px-4 py-2 border-t border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-black no-scrollbar">
         <div className="flex space-x-4 no-scrollbar">
           {categories.length > 0 ? (
-            categories.map((category) => (
-              <Link
-                key={category.slug}
-                href={`/${category.slug}`}
-                className={`px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors ${
-                  path === `/${category.slug}`
-                    ? 'bg-orange-100 text-orange-600 border-orange-300 dark:bg-orange-900 dark:text-white'
-                    : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white border-transparent'
-                }`}
-              >
-                {category.name}
-              </Link>
-            ))
+            categories.map((category) => {
+              const isActive = path === `/${category.slug}`;
+              return (
+                <Link
+                  key={category.slug}
+                  href={`/${category.slug}`}
+                  className={`px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors ${
+                    isActive
+                      ? 'bg-orange-100 text-orange-600 border-orange-300 dark:bg-orange-900 dark:text-white'
+                      : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white border-transparent'
+                  }`}
+                >
+                  {category.name}
+                </Link>
+              );
+            })
           ) : (
             <p>No categories available.</p>
           )}
