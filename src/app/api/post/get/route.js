@@ -36,7 +36,7 @@ export async function POST(req) {
       .sort({ updatedAt: sortDirection })
       .skip(startIndex)
       .limit(limit)
-      .populate('author', 'name'); // Populate author field with 'name' (adjust field names as needed)
+      .populate('author', 'name description');
 
     const [totalPosts, lastMonthPosts] = await Promise.all([
       Post.countDocuments(query),

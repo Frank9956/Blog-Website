@@ -3,12 +3,14 @@ import { Button } from 'flowbite-react';
 import Link from 'next/link';
 import CategoryWrapper from '@/app/components/CategoryWrapper';
 import Sidenews from '@/app/components/Sidenews';
+import { FiUser } from 'react-icons/fi';
 
 export async function generateMetadata({ params }) {
   try {
-    const result = await fetch(process.env.URL + '/api/post/get', {
+    const { slug } = await params; // Await the params object
+    const result = await fetch(process.env.NEXT_PUBLIC_URL + '/api/post/get', {
       method: 'POST',
-      body: JSON.stringify({ slug: params.slug }),
+      body: JSON.stringify({ slug }),
       cache: 'no-store',
     });
     const data = await result.json();
@@ -26,16 +28,21 @@ export async function generateMetadata({ params }) {
   }
 }
 
+
 export default async function PostPage({ params }) {
   let post = null;
+  let author = null;
+
   try {
-    const result = await fetch(process.env.URL + '/api/post/get', {
+    // Fetch the post using params.slug directly
+    const result = await fetch(process.env.NEXT_PUBLIC_URL + '/api/post/get', {
       method: 'POST',
-      body: JSON.stringify({ slug: params.slug }),
+      body: JSON.stringify({ slug: params.slug }), // Directly use params.slug
       cache: 'no-store',
     });
     const data = await result.json();
     post = data.posts[0];
+
   } catch {
     post = { title: 'Failed to load post' };
   }
@@ -94,6 +101,28 @@ export default async function PostPage({ params }) {
         <div className='mt-10'>
           <RecentPostsWrapper limit={3} />
         </div>
+
+        {/* Author Info */}
+        {post?.author && (
+          <div className="my-10">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              Who wrote this?
+            </h3>
+            <div className="flex items-center gap-4 border rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+              <img
+                src="https://source.unsplash.com/random/150x150" // Dummy profile image
+                className="w-16 h-16 rounded-full object-cover"
+              />
+              <div>
+                <p className="text-lg font-semibold">{post.author.name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {post.author.description || 'No bio available.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
 
       {/* Side News */}
