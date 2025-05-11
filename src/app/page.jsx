@@ -19,8 +19,8 @@ export default async function Home({ searchParams }) {
   if (page > totalPages && totalPages > 0) redirect(`/?page=${totalPages}`);
 
   return (
-    <div className="flex flex-col min-h-screen lg:flex-row">
-      
+    <div className="flex flex-col min-h-screen ">
+      <div className="flex flex-1 flex-col lg:flex-row">
         <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
           <CategoryWrapper />
         </div>
@@ -42,11 +42,10 @@ export default async function Home({ searchParams }) {
                 <a
                   key={p}
                   href={`/?page=${p}`}
-                  className={`px-3 py-1 rounded-md text-sm font-medium border ${
-                    page === p
+                  className={`px-3 py-1 rounded-md text-sm font-medium border ${page === p
                       ? 'bg-primary text-white'
                       : 'bg-background text-foreground hover:bg-muted'
-                  }`}
+                    }`}
                 >
                   {p}
                 </a>
@@ -67,7 +66,9 @@ export default async function Home({ searchParams }) {
         <div className="w-full lg:w-auto h-auto lg:h-[calc(100vh-80px)] overflow-y-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
           <Sidenews limit={4} />
         </div>
-      
+
+      </div>
+      <Footer />
     </div>
   );
 }
