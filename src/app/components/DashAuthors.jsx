@@ -118,7 +118,7 @@ export default function DashauthorsList() {
     <div className="p-6 w-full flex flex-col lg:flex-row gap-10">
       {/* Form Section */}
       <div className="w-full lg:w-1/2">
-        <h1 className="text-2xl font-semibold mb-6">{editMode ? 'Edit Author' : 'Add New Author'}</h1>
+        <h1 className="text-2xl font-semibold mb-6">{editMode ? 'Edit Author' : 'Manage Authors'}</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-8">
           <input
             type="text"
@@ -145,34 +145,37 @@ export default function DashauthorsList() {
       </div>
 
       {/* List Section */}
-      <div className="w-full lg:w-1/2 pt-14 space-y-3">
-        {authorsList.length > 0 ? (
-          authorsList.map((author) => (
-            <div key={author._id} className="flex justify-between items-center border p-3 rounded-md">
-              <div>
-                <h2 className="text-lg font-semibold">{author.name}</h2>
-                <p className="text-sm text-gray-500">{author.description}</p>
+      <div className="w-full lg:w-1/2 pt-14">
+        <div className="max-h-[calc(100vh-200px)] overflow-y-auto space-y-3 pr-2 no-scrollbar">
+          {authorsList.length > 0 ? (
+            authorsList.map((author) => (
+              <div key={author._id} className="flex justify-between items-center border p-3 rounded-md">
+                <div>
+                  <h2 className="text-lg font-semibold">{author.name}</h2>
+                  <p className="text-sm text-gray-500">{author.description}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(author)}
+                    className="text-blue-500 hover:text-blue-600"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => openDeleteModal(author._id)}
+                    className="text-red-500 hover:text-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(author)}
-                  className="text-blue-500 hover:text-blue-600"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => openDeleteModal(author._id)}
-                  className="text-red-500 hover:text-red-600"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No authors found.</p>
-        )}
+            ))
+          ) : (
+            <p>No authors found.</p>
+          )}
+        </div>
       </div>
+
 
       {/* Delete Modal */}
       {showModal && (

@@ -84,15 +84,23 @@ export default function DashPosts() {
   
 
   return (
-    <div className="flex justify-center w-full p-4 bg-white text-black dark:bg-black dark:text-white">
-      <div className="w-full max-w-7xl relative">
-        {/* New Post Button */}
-        <Link href="dashboard/create-post">
-          <button className="absolute top-4 right-4 z-10 px-5 py-2 rounded-md text-base font-medium bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100">
-            New Post
-          </button>
-        </Link>
-
+    <div className="flex justify-center w-full p-6 bg-white text-black dark:bg-black dark:text-white">
+      <div className="w-full min-w-8xl relative">
+        {/* Button Container */}
+        <div className="flex justify-between items-center">
+          {/* Manage Posts Text (Leftmost) */}
+          <span className="text-2xl font-semibold mb-6 dark:text-white">
+            Manage Posts
+          </span>
+          
+          {/* New Post Button (Rightmost) */}
+          <Link href="dashboard/create-post">
+            <button className="mb-6 px-5 py-2 rounded-md text-base font-medium bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100">
+              New Post
+            </button>
+          </Link>
+        </div>
+  
         {loading ? (
           <div className="flex justify-center items-center mt-20">
             <span>Loading posts...</span>
@@ -102,7 +110,7 @@ export default function DashPosts() {
             <p>{error}</p>
           </div>
         ) : userPosts.length > 0 ? (
-          <div className="mt-16 overflow-x-auto">
+          <div className="mt-5 overflow-x-auto">
             <table className="min-w-full mx-auto text-base divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-200 dark:bg-gray-800">
                 <tr>
@@ -168,7 +176,7 @@ export default function DashPosts() {
             You have no posts yet!
           </p>
         )}
-
+  
         {/* Confirm Delete Modal */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent className="sm:max-w-md bg-white dark:bg-black text-black dark:text-white">
@@ -197,4 +205,5 @@ export default function DashPosts() {
       </div>
     </div>
   );
+  
 }

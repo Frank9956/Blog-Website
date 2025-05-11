@@ -4,6 +4,8 @@ import Link from 'next/link';
 import CategoryWrapper from '@/app/components/CategoryWrapper';
 import Sidenews from '@/app/components/Sidenews';
 import { FiUser } from 'react-icons/fi';
+import Footer from '@/app/components/Footer';
+
 
 export async function generateMetadata({ params }) {
   try {
@@ -58,77 +60,81 @@ export default async function PostPage({ params }) {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-full lg:w-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
-        <CategoryWrapper />
-      </aside>
+    <div className="flex flex-col min-h-screen">
+      {/* Content layout */}
+      <div className="flex flex-1 flex-col lg:flex-row">
+        {/* Sidebar */}
+        <aside className="w-full lg:w-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
+          <CategoryWrapper />
+        </aside>
 
-      {/* Main Content */}
-      <main className='flex-1 px-4 sm:px-6 lg:px-10 py-6'>
-        <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold'>
-          {post?.title}
-        </h1>
+        {/* Main Content */}
+        <main className='flex-1 px-4 sm:px-6 lg:px-10 py-6'>
+          <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold'>
+            {post?.title}
+          </h1>
 
-        <div className="my-4">
-          <Link href={`/${post.category}`}>
-            <Button color='gray' pill size='xs'>
-              {post?.category}
-            </Button>
-          </Link>
-        </div>
+          <div className="my-4">
+            <Link href={`/${post.category}`}>
+              <Button color='gray' pill size='xs'>
+                {post?.category}
+              </Button>
+            </Link>
+          </div>
 
-        <div className="my-4">
-          <img
-            src={post?.image || '/default-image.jpg'}
-            alt={post?.title}
-            className='w-full max-h-[500px] object-cover rounded-lg shadow'
-          />
-        </div>
+          <div className="my-4">
+            <img
+              src={post?.image || '/default-image.jpg'}
+              alt={post?.title}
+              className='w-full max-h-[500px] object-cover rounded-lg shadow'
+            />
+          </div>
 
-        <div className='flex justify-between text-sm text-gray-500 border-b pb-2 mb-4'>
-          <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-          <span className='italic'>
-            {(post?.content?.length / 1000).toFixed(0)} mins read
-          </span>
-        </div>
+          <div className='flex justify-between text-sm text-gray-500 border-b pb-2 mb-4'>
+            <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+            <span className='italic'>
+              {(post?.content?.length / 1000).toFixed(0)} mins read
+            </span>
+          </div>
 
-        <div
-          className='prose dark:prose-invert max-w-full'
-          dangerouslySetInnerHTML={{ __html: post?.content }}
-        ></div>
+          <div
+            className='prose dark:prose-invert max-w-full'
+            dangerouslySetInnerHTML={{ __html: post?.content }}
+          ></div>
 
-        <div className='mt-10'>
-          <RecentPostsWrapper limit={3} />
-        </div>
+          <div className='mt-10'>
+            <RecentPostsWrapper limit={3} />
+          </div>
 
-        {/* Author Info */}
-        {post?.author && (
-          <div className="my-10">
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              Who wrote this?
-            </h3>
-            <div className="flex items-center gap-4 border rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
-              <img
-                src="https://source.unsplash.com/random/150x150" // Dummy profile image
-                className="w-16 h-16 rounded-full object-cover"
-              />
-              <div>
-                <p className="text-lg font-semibold">{post.author.name}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {post.author.description || 'No bio available.'}
-                </p>
+          {/* Author Info */}
+          {post?.author && (
+            <div className="my-10">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                Who wrote this?
+              </h3>
+              <div className="flex items-center gap-4 border rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+                <div className="w-16 h-16 rounded-full dark:bg-gray-800 flex items-center justify-center">
+                  <FiUser className="w-10 h-10 text-gray-500 dark:text-gray-300" />
+                </div>
+                <div>
+                  <p className="text-lg font-semibold">{post.author.name}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {post.author.description || 'No bio available.'}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </main>
 
-      </main>
+        {/* Side News */}
+        <aside className="w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
+          <Sidenews limit={4} />
+        </aside>
+      </div>
 
-      {/* Side News */}
-      <aside className="w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
-        <Sidenews limit={4} />
-      </aside>
+      {/* Sticky Footer */}
+      <Footer />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Button } from '@/components/ui/button';
 
 export default function DashboardComp() {
-  
+
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -76,9 +76,9 @@ export default function DashboardComp() {
   if (!mounted) return null;
 
   return (
-    <div className="p-6 w-[70%] mx-auto bg-white text-black dark:bg-black dark:text-white">
+    <div className="p-6 w-full bg-white text-black dark:bg-black dark:text-white">
       {/* Stat Cards */}
-      <div className="flex-wrap flex gap-6 justify-center">
+      <div className="flex-wrap flex gap-6 justify-start">
         {/* Users Card */}
         <div className="flex flex-col p-6 bg-gray-100 dark:bg-gray-900 gap-4 md:w-72 w-full rounded-2xl shadow-sm border border-gray-300 dark:border-gray-700">
           <div className="flex justify-between items-center">

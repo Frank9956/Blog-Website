@@ -35,7 +35,7 @@ export default function Dashboard() {
   return (
     <div className="max-h-screen flex flex-col md:flex-row">
 
-      <div className="md:w-100">
+      <div className="">
         <DashSidebar />
       </div>
 

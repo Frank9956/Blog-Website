@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 export default function DashProfile() {
   const { theme } = useTheme();
   return (
-    <div className='flex justify-center items-center w-full'>
+    <div className='flex w-full p-6'>
       <UserProfile
         appearance={{
           baseTheme: theme === 'dark' ? dark : light,

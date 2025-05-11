@@ -85,60 +85,76 @@ export default function DashUsers() {
 
   return (
     <div className="overflow-x-auto md:mx-auto p-6 scrollbar-none dark:bg-black dark:text-white">
+      <div className="flex justify-between items-center mb-4">
+        <span className="text-2xl font-semibold text-black dark:text-white">
+          Manage Users
+        </span>
+      </div>
+  
       {user?.publicMetadata?.isAdmin && users.length > 0 ? (
-        <Table className="shadow-md dark:bg-black dark:border-gray-700">
-          <TableHeader>
-            <TableRow className="bg-gray-200 dark:bg-gray-800">
-              <TableHead className="text-lg text-black dark:text-white">Date Created</TableHead>
-              <TableHead className="text-lg text-black dark:text-white">User Image</TableHead>
-              <TableHead className="text-lg text-black dark:text-white">Username</TableHead>
-              <TableHead className="text-lg text-black dark:text-white">Email</TableHead>
-              <TableHead className="text-lg text-black dark:text-white">Admin</TableHead>
-              <TableHead className="text-lg text-black dark:text-white">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((userItem) => (
-              <TableRow key={userItem._id} className="bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <TableCell className="text-lg text-black dark:text-white">
-                  {new Date(userItem.createdAt).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <img
-                    src={userItem.profilePicture}
-                    alt={userItem.username}
-                    className="w-12 h-12 object-cover bg-gray-500 rounded-full"
-                  />
-                </TableCell>
-                <TableCell className="text-lg text-black dark:text-white">{userItem.username}</TableCell>
-                <TableCell className="text-lg text-black dark:text-white">{userItem.email}</TableCell>
-                <TableCell>
-                  {userItem.isAdmin ? (
-                    <Badge variant="success" className="text-md">
-                      <FaCheck className="mr-1" /> Admin
-                    </Badge>
-                  ) : (
-                    <Badge variant="destructive" className="text-md">
-                      <FaTimes className="mr-1" /> Not Admin
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleToggleAdmin(userItem._id, userItem.isAdmin)}
-                  >
-                    {userItem.isAdmin ? 'Remove Admin' : 'Make Admin'}
-                  </Button>
-                </TableCell>
+        <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
+          <Table className="shadow-md dark:bg-black dark:border-gray-700">
+            {/* Table Header with Sticky Position */}
+            <TableHeader className="sticky top-0 z-10 bg-gray-200 dark:bg-gray-800">
+              <TableRow>
+                <TableHead className="text-lg text-black dark:text-white">Date Created</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">User Image</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Username</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Email</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Admin</TableHead>
+                <TableHead className="text-lg text-black dark:text-white">Action</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            {/* Table Body with Scroll */}
+            <TableBody className="overflow-y-auto" style={{ maxHeight: '400px' }}>
+              {users.map((userItem) => (
+                <TableRow key={userItem._id} className="bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <TableCell className="text-lg text-black dark:text-white">
+                    {new Date(userItem.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <img
+                      src={userItem.profilePicture}
+                      alt={userItem.username}
+                      className="w-12 h-12 object-cover bg-gray-500 rounded-full"
+                    />
+                  </TableCell>
+                  <TableCell className="text-lg text-black dark:text-white">{userItem.username}</TableCell>
+                  <TableCell className="text-lg text-black dark:text-white">{userItem.email}</TableCell>
+                  <TableCell>
+                    {userItem.isAdmin ? (
+                      <Badge variant="success" className="text-md">
+                        <FaCheck className="mr-1" /> Admin
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive" className="text-md">
+                        <FaTimes className="mr-1" /> Not Admin
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleToggleAdmin(userItem._id, userItem.isAdmin)}
+                    >
+                      {userItem.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       ) : (
         <p className="text-xl text-black dark:text-white">You have no users yet!</p>
       )}
     </div>
   );
+  
+  
+
+  
+  
+  
 }

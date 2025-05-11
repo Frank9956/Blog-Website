@@ -1,47 +1,45 @@
-import mongoose from 'mongoose';
 import Post from '../../../../lib/models/post.model.js';
 import Author from '../../../../lib/models/authors.model.js';
 import { connect } from '../../../../lib/mongodb/mongoose.js';
-import { currentUser } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 
 export const POST = async (req) => {
-  const user = await currentUser();
-
   try {
-    await connect();
-    const data = await req.json();
+    const { userId } = auth(); // Safe in App Router
 
-    // Validate user authentication and authorization
-    if (
-      !user ||
-      user.publicMetadata.userMongoId !== data.userMongoId ||
-      user.publicMetadata.isAdmin !== true
-    ) {
+    if (!userId) {
       return new Response('Unauthorized', { status: 401 });
     }
 
-    // Validate required fields
+    const clerkUser = await clerkClient.users.getUser(userId); // fetch full user object
+
+    if (!clerkUser.publicMetadata?.isAdmin) {
+      return new Response('Unauthorized', { status: 401 });
+    }
+
+    await connect();
+
+    const data = await req.json();
     const { title, content, image, category, author } = data;
+
     if (!title || !content || !author) {
       return new Response('Missing required fields', { status: 400 });
     }
 
-    // Find the author by name
-    const authorDoc = await Author.findOne({ name: author });
+    const authorDoc = await Author.findOne({ slug: author }); // you're sending `slug`, not name
+
     if (!authorDoc) {
       return new Response('Author not found', { status: 404 });
     }
 
-    // Generate slug from title
     const slug = title
       .split(' ')
       .join('-')
       .toLowerCase()
       .replace(/[^a-zA-Z0-9-]/g, '');
 
-    // Create a new post
     const newPost = await Post.create({
-      userId: user.publicMetadata.userMongoId,
+      userId: clerkUser.publicMetadata.userMongoId,
       content,
       title,
       image,
