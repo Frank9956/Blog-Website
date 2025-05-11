@@ -37,6 +37,7 @@ export default function UpdatePost() {
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
   const postId = pathname.split('/').pop();
@@ -50,11 +51,16 @@ export default function UpdatePost() {
           body: JSON.stringify({ postId }),
         });
         const data = await res.json();
-        if (res.ok) setFormData(data.posts[0]);
+        if (res.ok) {
+          setFormData(data.posts[0]);
+        }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
+
     if (isSignedIn && user?.publicMetadata?.isAdmin) {
       fetchPost();
     }
@@ -133,7 +139,7 @@ export default function UpdatePost() {
     }
   };
 
-  if (!isLoaded) return null;
+  if (!isLoaded || loading) return <p className="text-center mt-10"></p>;
 
   if (isSignedIn && user.publicMetadata.isAdmin) {
     return (
@@ -145,14 +151,14 @@ export default function UpdatePost() {
               type="text"
               placeholder="Title"
               required
-              defaultValue={formData.title}
+              value={formData.title || ''}
               className="flex-1"
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
             />
             <Select
-              value={formData.category}
+              value={formData.category || ''}
               onValueChange={(value) =>
                 setFormData({ ...formData, category: value })
               }
@@ -220,7 +226,7 @@ export default function UpdatePost() {
             theme="snow"
             placeholder="Write something..."
             className="h-72 mb-12"
-            value={formData.content}
+            value={formData.content || ''}
             onChange={(value) =>
               setFormData({ ...formData, content: value })
             }

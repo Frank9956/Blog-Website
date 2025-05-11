@@ -14,7 +14,7 @@ export async function POST(req) {
 
   // Pagination configuration (default values)
   const skip = parseInt(data.skip) || 0; // This is equivalent to `startIndex`
-  const limit = parseInt(data.limit) || 9; // Default limit of 9 posts per page
+  const limit = parseInt(data.limit) ; // Default limit of 9 posts per page
   const sortDirection = data.order === 'asc' ? 1 : -1; // Sorting by updated date (default is descending)
 
   // Construct the query with dynamic filters

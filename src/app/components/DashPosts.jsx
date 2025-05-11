@@ -65,10 +65,10 @@ export default function DashPosts() {
           userId: user?.publicMetadata?.userMongoId,
         }),
       });
-  
+
       const data = await res.json();
       console.log('Response:', data); // Log the response data
-  
+
       if (res.ok) {
         const newPosts = userPosts.filter((post) => post._id !== postIdToDelete);
         setUserPosts(newPosts);
@@ -81,7 +81,7 @@ export default function DashPosts() {
       setError('Something went wrong while deleting the post. Please try again.');
     }
   };
-  
+
 
   return (
     <div className="flex justify-center w-full p-6 bg-white text-black dark:bg-black dark:text-white">
@@ -92,7 +92,7 @@ export default function DashPosts() {
           <span className="text-2xl font-semibold mb-6 dark:text-white">
             Manage Posts
           </span>
-          
+
           {/* New Post Button (Rightmost) */}
           <Link href="dashboard/create-post">
             <button className="mb-6 px-5 py-2 rounded-md text-base font-medium bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100">
@@ -100,27 +100,27 @@ export default function DashPosts() {
             </button>
           </Link>
         </div>
-  
+
         {loading ? (
           <div className="flex justify-center items-center mt-20">
-            <span>Loading posts...</span>
+            <span></span>
           </div>
         ) : error ? (
           <div className="text-center text-red-500 mt-20">
             <p>{error}</p>
           </div>
         ) : userPosts.length > 0 ? (
-          <div className="mt-5 overflow-x-auto">
-            <table className="min-w-full mx-auto text-base divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="mt-5 overflow-x-auto max-h-[600px] overflow-y-auto border rounded-md no-scrollbar">
+            <table className="min-w-full text-base divide-y divide-gray-200 dark:divide-gray-700">              
               <thead className="bg-gray-200 dark:bg-gray-800">
-                <tr>
-                  {['Date', 'Image', 'Title', 'Category', 'Author', 'Delete', 'Edit'].map((heading) => (
-                    <th key={heading} className="px-4 py-4 text-left font-semibold text-black dark:text-white">
-                      {heading}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
+              <tr>
+                {['Date', 'Image', 'Title', 'Category', 'Author', 'Delete', 'Edit'].map((heading) => (
+                  <th key={heading} className="px-4 py-4 text-left font-semibold text-black dark:text-white">
+                    {heading}
+                  </th>
+                ))}
+              </tr>
+            </thead>
               <tbody className="bg-white dark:bg-black divide-y divide-gray-200 dark:divide-gray-800">
                 {userPosts.map((post) => (
                   <tr key={post._id} className="hover:bg-gray-100 dark:hover:bg-gray-900 transition">
@@ -176,7 +176,7 @@ export default function DashPosts() {
             You have no posts yet!
           </p>
         )}
-  
+
         {/* Confirm Delete Modal */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent className="sm:max-w-md bg-white dark:bg-black text-black dark:text-white">
@@ -205,5 +205,5 @@ export default function DashPosts() {
       </div>
     </div>
   );
-  
+
 }
