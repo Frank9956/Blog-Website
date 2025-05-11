@@ -102,9 +102,6 @@ export default async function PostPage({ params }) {
             dangerouslySetInnerHTML={{ __html: post?.content }}
           ></div>
 
-          <div className='mt-10'>
-            <RecentPostsWrapper limit={3} />
-          </div>
 
           {/* Author Info */}
           {post?.author && (
@@ -125,6 +122,11 @@ export default async function PostPage({ params }) {
               </div>
             </div>
           )}
+
+
+          <div className='mt-10'>
+            <RecentPostsWrapper limit={3} />
+          </div>
         </main>
 
         {/* Side News */}
