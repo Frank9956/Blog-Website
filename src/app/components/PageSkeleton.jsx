@@ -39,7 +39,7 @@ export default function PageSkeleton() {
             <div className="h-4 bg-gray-300 rounded mb-6 w-1/3"></div>
 
             {/* Cards Grid */}
-            <div className="w-[640px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 pr-6">
+            <div className="lg:w-[640px] w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 pr-6">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
@@ -55,7 +55,7 @@ export default function PageSkeleton() {
                   </div>
 
                   {/* Right - Image Skeleton */}
-                  <div className="w-64 h-32  bg-gray-300 dark:bg-gray-700 p-2 rounded-r-lg shrink-0"></div>
+                  <div className="w-32 h-32 sm:w-32 sm:h-20 lg:w-64 lg:h-32  bg-gray-300 dark:bg-gray-700 p-2 rounded-r-lg shrink-0"></div>
                 </div>
               ))}
             </div>

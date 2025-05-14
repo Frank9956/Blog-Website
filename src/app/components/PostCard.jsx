@@ -16,7 +16,10 @@ export default function PostCard({ post }) {
       </div>
   
       {/* Right - Image */}
-      <Link href={`/${post.category}/${post.slug}`} className="block w-64 h-32 shrink-0 rounded">
+      <Link
+        href={`/${post.category}/${post.slug}`}
+        className="flex items-center justify-center w-32 h-32 sm:w-32 sm:h-20 lg:w-64 lg:h-32 shrink-0 rounded"
+      >
         <img
           src={post.image || '/default-image.jpg'}
           alt={post.title}
@@ -25,5 +28,4 @@ export default function PostCard({ post }) {
       </Link>
     </div>
   );
-  
 }
