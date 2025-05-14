@@ -40,7 +40,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-transparent text-black dark:text-white backdrop-blur-[10px]">
-      <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap px-6 py-4">
+      <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap px-6 pt-4">
         {/* Logo */}
         <Link href="/" className="flex items-center mr-8">
           <Image src="/rmgoe_logo.svg" alt="Logo" width={180} height={60} />
