@@ -4,7 +4,7 @@ export default function Sidepost({ post }) {
   return (
     <Link
       href={`/${post.category}/${post.slug}`}
-      className="group flex w-full items-center justify-between gap-3 py-2 px-3 rounded-md border border-gray-200 dark:border-gray-700 
+      className="group flex w-[300px] items-center justify-between gap-3 py-2 px-3 rounded-md border border-gray-200 dark:border-gray-700 
         hover:border-orange-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 
         bg-white dark:bg-black"
     >

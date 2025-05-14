@@ -18,7 +18,7 @@ export default function Sidebar({ categories = [] }) {
   };
 
   return (
-    <div className="md:w-100 mr-2">
+    <div className="md:w-full mr-2">
       {/* Desktop sidebar */}
       <aside className="w-full hidden md:block sticky top-0 max-h-screen dark:border-gray-700 p-6">
         <div className="space-y-3">

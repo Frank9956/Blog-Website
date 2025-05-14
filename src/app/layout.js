@@ -4,8 +4,7 @@ import './globals.css';
 import Header from './components/Header';
 import { ThemeProvider } from 'next-themes';
 import { ClerkProvider } from '@clerk/nextjs';
-import Footer from './components/Footer';
-import LayoutWrapper from './layout-wrapper'; // Import new component
+import NextTopLoader from 'nextjs-toploader';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -39,6 +38,12 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
+            <NextTopLoader
+                color="orange"
+                showSpinner={false}
+                easing="ease-out"
+            
+            />
             <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen flex flex-col">
               {/* Header */}
               <div className="fixed bg-transparent top-0 left-0 w-full z-50">
@@ -46,7 +51,7 @@ export default function RootLayout({ children }) {
               </div>
 
               {/* Main Layout */}
-              <div className="flex flex-col lg:flex-row flex-1 pt-[60px] w-full no-scrollbar">
+              <div className="flex flex-col lg:flex-row flex-1 pt-[60px] w-full  no-scrollbar">
                 {children}
               </div>
 

@@ -29,7 +29,7 @@ export default async function AllPosts({ limit = 4 }) {
   if (!posts.length) return <div className="text-center text-xl">No posts found.</div>;
 
   return (
-    <div className="md:w-100 mr-4">
+    <div className="md:w-[320px] mr-4">
       <div className="flex flex-col pl-4 justify-center items-center mb-5">
         <div className="flex flex-wrap gap-5 mt-5 justify-center">
           {posts.map((post) => (
