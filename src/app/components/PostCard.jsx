@@ -4,11 +4,13 @@ export default function PostCard({ post }) {
   const formattedDate = new Date(post.createdAt).toLocaleDateString();
 
   return (
-    <div className="flex w-full border rounded-lg overflow-hidden border-gray-300 dark:border-gray-700 bg-white dark:bg-black hover:border-white transition-all duration-300">
+    <div className="flex w-full border rounded-lg overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 
+        hover:border-orange-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 
+        bg-white dark:bg-black">
       {/* Left - Text */}
-      <div className="flex-1 p-4 flex flex-col justify-between text-black dark:text-white">
+      <div className="flex-1 p-4 flex flex-col justify-between text-black dark:text-white ">
         <Link href={`/${post.category}/${post.slug}`}>
-          <p className="text-base font-semibold line-clamp-3">{post.title}</p>
+          <p className="text-base font-semibold line-clamp-3 ">{post.title}</p>
         </Link>
         <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
           <span className="italic">{post.category}</span>
