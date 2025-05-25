@@ -6,7 +6,7 @@ async function fetchPosts(limit = 4) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/post/get`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ limit, category: '', order: '' }),
+      body: JSON.stringify({ limit,skip : 3, category: '', order: '' }),
       cache: 'no-store',
     });
 

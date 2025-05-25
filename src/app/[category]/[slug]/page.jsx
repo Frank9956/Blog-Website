@@ -1,4 +1,4 @@
-import RecentPostsWrapper from '@/app/components/RecentPostsWrapper';
+import MoreNews from '@/app/components/MoreNews';
 import { Button } from 'flowbite-react';
 import Link from 'next/link';
 import CategoryWrapper from '@/app/components/CategoryWrapper';
@@ -64,18 +64,18 @@ export default async function PostPage({ params }) {
       {/* Content Wrapper */}
       <div className="flex justify-center w-full px-4 sm:px-6 lg:px-8 flex-1">
         <div className="flex flex-1 flex-col lg:flex-row w-full max-w-[1280px]">
-          
+
           {/* Sidebar */}
           <aside className="w-full lg:w-auto border-b lg:border-b-0 lg:border-r border-border no-scrollbar">
             <CategoryWrapper />
           </aside>
-  
+
           {/* Main Content - Scrollable */}
           <main className="flex-1 px-2 sm:px-4 lg:px-10 py-6 overflow-y-auto h-[calc(100vh-60px)] no-scrollbar">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
               {post?.title}
             </h1>
-  
+
             <div className="my-4">
               <Link href={`/${post.category}`}>
                 <Button color="gray" pill size="xs">
@@ -83,7 +83,7 @@ export default async function PostPage({ params }) {
                 </Button>
               </Link>
             </div>
-  
+
             <div className="my-4">
               <img
                 src={post?.image || '/default-image.jpg'}
@@ -91,19 +91,19 @@ export default async function PostPage({ params }) {
                 className="w-full max-h-[500px] object-cover rounded-lg shadow"
               />
             </div>
-  
+
             <div className="flex justify-between text-sm text-gray-500 border-b pb-2 mb-4">
               <span>{new Date(post.createdAt).toLocaleDateString()}</span>
               <span className="italic">
                 {(post?.content?.length / 1000).toFixed(0)} mins read
               </span>
             </div>
-  
+
             <div
               className="prose dark:prose-invert max-w-full"
               dangerouslySetInnerHTML={{ __html: post?.content }}
             ></div>
-  
+
             {post?.author && (
               <div className="my-10">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
@@ -122,23 +122,23 @@ export default async function PostPage({ params }) {
                 </div>
               </div>
             )}
-  
+
             <div className="mt-10">
-              <RecentPostsWrapper limit={3} />
+              <MoreNews initialLimit={3} />
             </div>
           </main>
-  
+
           {/* Side News */}
           <aside className="w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-border no-scrollbar">
             <Sidenews limit={4} />
           </aside>
         </div>
       </div>
-  
+
       {/* Sticky Footer */}
       <Footer />
     </div>
   );
-  
-  
+
+
 }
