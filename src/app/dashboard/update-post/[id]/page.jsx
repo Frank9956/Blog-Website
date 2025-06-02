@@ -3,6 +3,7 @@
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import slugify from 'slugify';
+import NextImage from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import {
   getDownloadURL,
@@ -171,11 +172,11 @@ export default function UpdatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       // Optionally, generate slug here in case backend doesn't do it or for immediate redirect
       const newSlug = slugify(formData.title || '', { lower: true, strict: true });
-  
+
       const res = await fetch('/api/post/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -186,21 +187,21 @@ export default function UpdatePost() {
           postId,
         }),
       });
-  
+
       const data = await res.json();
-  
+
       if (!res.ok) {
         setPublishError(data.message);
         return;
       }
-  
+
       setPublishError(null);
       router.push(`/post/${data.slug}`); // Redirect to updated slug URL
     } catch (error) {
       setPublishError('Something went wrong');
     }
   };
-  
+
 
   if (!isLoaded || loading) return <p className="text-center mt-10">Loading...</p>;
 
@@ -213,14 +214,14 @@ export default function UpdatePost() {
 
   return (
 
-    <div className="mx-auto p-3" style={{ maxWidth: '1280px',height: 'calc(100vh - 50px)', overflowY: 'auto',}}>
+    <div className="mx-auto p-3" style={{ maxWidth: '1280px', height: 'calc(100vh - 50px)', overflowY: 'auto', }}>
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-      <div className="flex items-center justify-between my-7 max-w-[1280px] ">
-        <h1 className="text-3xl font-bold">Update a Post</h1>
-        <Button type="submit" className="bg-purple-600 w-36 h-12 hover:bg-purple-700">
-          Update Post
-        </Button>
-      </div>
+        <div className="flex items-center justify-between my-7 max-w-[1280px] ">
+          <h1 className="text-3xl font-bold">Update a Post</h1>
+          <Button type="submit" className="bg-purple-600 w-36 h-12 hover:bg-purple-700">
+            Update Post
+          </Button>
+        </div>
         <div className="flex gap-9">
           {/* Left Column: Inputs stacked */}
           <div className="flex flex-col gap-4 flex-1 max-w-[600px]">
@@ -282,10 +283,13 @@ export default function UpdatePost() {
           {/* Right Column: Image preview */}
           <div className="flex-1 max-w-[600px] flex items-center justify-center border rounded-md min-h-[200px]">
             {formData.image ? (
-              <img
+              <NextImage
                 src={formData.image}
                 alt="upload"
-                className="max-h-[200px] max-w-full object-contain rounded-md"
+                width={200}        // set width
+                height={200}       // set height or aspect ratio
+                className="object-contain rounded-md"
+                priority={false}   // true if you want it to load ASAP
               />
             ) : (
               <p className="text-gray-500">No image uploaded yet</p>
@@ -304,7 +308,7 @@ export default function UpdatePost() {
           <EditorContent editor={editor} />
         </div>
 
-        
+
         {publishError && (
           <Alert variant="destructive" className="mt-5">
             <AlertTitle>Error</AlertTitle>
