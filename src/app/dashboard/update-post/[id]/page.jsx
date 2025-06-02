@@ -1,10 +1,9 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import dynamic from 'next/dynamic';
-const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
-import 'react-quill-new/dist/quill.snow.css';
-
+import { useEffect, useState } from 'react';
+import slugify from 'slugify';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   getDownloadURL,
   getStorage,
@@ -12,11 +11,6 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../../../../firebase';
-
-import { useEffect, useState } from 'react';
-import { CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
-import { useRouter, usePathname } from 'next/navigation';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -28,6 +22,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import TextAlign from '@tiptap/extension-text-align';
+import Underline from '@tiptap/extension-underline';
+import Image from '@tiptap/extension-image'
+
+
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  Link as LinkIcon,
+  Unlink,
+  Image as ImageIcon,
+  Table as TableIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+} from 'lucide-react';
+
+// ✅ EditorToolbar with type="button" on all buttons
+function EditorToolbar({ editor }) {
+  if (!editor) return null;
+
+  return (
+    <div className="flex gap-2 mb-3 border rounded-md p-2 bg-gray-50 dark:bg-gray-800">
+      <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}><Bold size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}><Italic size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('underline') ? 'bg-gray-200' : ''}`}><UnderlineIcon size={16} /></button>
+      <button type="button" onClick={() => {
+        const url = prompt('Enter link URL');
+        if (url) editor.chain().focus().setLink({ href: url }).run();
+      }} className="p-2 rounded hover:bg-gray-100"><LinkIcon size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().unsetLink().run()} className="p-2 rounded hover:bg-gray-100"><Unlink size={16} /></button>
+      <button type="button" onClick={() => {
+        const url = prompt('Enter image URL');
+        if (url) editor.chain().focus().setImage({ src: url }).run();
+      }} className="p-2 rounded hover:bg-gray-100"><ImageIcon size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} className="p-2 rounded hover:bg-gray-100"><TableIcon size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} className={`p-2 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : ''}`}><AlignLeft size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} className={`p-2 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : ''}`}><AlignCenter size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} className={`p-2 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : ''}`}><AlignRight size={16} /></button>
+      <button type="button" onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={`p-2 rounded hover:bg-gray-100 ${editor.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : ''}`}><AlignJustify size={16} /></button>
+    </div>
+  );
+}
 
 export default function UpdatePost() {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -42,6 +86,18 @@ export default function UpdatePost() {
   const pathname = usePathname();
   const postId = pathname.split('/').pop();
 
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Underline,
+      Image, // ✅ Add this line
+    ],
+    content: formData.content || '',
+    onUpdate: ({ editor }) => {
+      setFormData((prev) => ({ ...prev, content: editor.getHTML() }));
+    },
+  });
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -53,9 +109,12 @@ export default function UpdatePost() {
         const data = await res.json();
         if (res.ok) {
           setFormData(data.posts[0]);
+          if (editor && data.posts[0].content) {
+            editor.commands.setContent(data.posts[0].content);
+          }
         }
       } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
       } finally {
         setLoading(false);
       }
@@ -64,7 +123,7 @@ export default function UpdatePost() {
     if (isSignedIn && user?.publicMetadata?.isAdmin) {
       fetchPost();
     }
-  }, [postId, user?.publicMetadata?.isAdmin, isSignedIn]);
+  }, [postId, user?.publicMetadata?.isAdmin, isSignedIn, editor]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -80,90 +139,96 @@ export default function UpdatePost() {
   }, []);
 
   const handleUploadImage = async () => {
-    try {
-      if (!file) {
-        setImageUploadError('Please select an image');
-        return;
-      }
-      setImageUploadError(null);
-      const storage = getStorage(app);
-      const fileName = new Date().getTime() + '-' + file.name;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setImageUploadProgress(progress.toFixed(0));
-        },
-        () => {
-          setImageUploadError('Image upload failed');
-          setImageUploadProgress(null);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setImageUploadProgress(null);
-            setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
-          });
-        }
-      );
-    } catch (error) {
-      setImageUploadError('Image upload failed');
-      setImageUploadProgress(null);
+    if (!file) {
+      setImageUploadError('Please select an image');
+      return;
     }
+    setImageUploadError(null);
+
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + '-' + file.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setImageUploadProgress(progress.toFixed(0));
+      },
+      () => {
+        setImageUploadError('Image upload failed');
+        setImageUploadProgress(null);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImageUploadProgress(null);
+          setFormData((prev) => ({ ...prev, image: downloadURL }));
+        });
+      }
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     try {
+      // Optionally, generate slug here in case backend doesn't do it or for immediate redirect
+      const newSlug = slugify(formData.title || '', { lower: true, strict: true });
+  
       const res = await fetch('/api/post/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          // Remove slug here, backend will generate and return the updated slug
           userMongoId: user.publicMetadata.userMongoId,
           postId,
         }),
       });
+  
       const data = await res.json();
+  
       if (!res.ok) {
         setPublishError(data.message);
         return;
       }
+  
       setPublishError(null);
-      router.push(`/post/${data.slug}`);
+      router.push(`/post/${data.slug}`); // Redirect to updated slug URL
     } catch (error) {
       setPublishError('Something went wrong');
     }
   };
+  
 
-  if (!isLoaded || loading) return <p className="text-center mt-10"></p>;
+  if (!isLoaded || loading) return <p className="text-center mt-10">Loading...</p>;
 
-  if (isSignedIn && user.publicMetadata.isAdmin) {
+  if (!isSignedIn || !user.publicMetadata.isAdmin)
     return (
-      <div className="p-3 max-w-3xl mx-auto min-h-screen">
-        <h1 className="text-center text-3xl my-7 font-semibold">Update a post</h1>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-4 sm:flex-row justify-between">
-            <Input
-              type="text"
-              placeholder="Title"
-              required
-              value={formData.title || ''}
-              className="flex-1"
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-            />
+      <h1 className="text-center text-3xl my-7 font-semibold min-h-screen">
+        You need to be an admin to update a post
+      </h1>
+    );
+
+  return (
+
+    <div className="mx-auto p-3" style={{ maxWidth: '1280px',height: 'calc(100vh - 50px)', overflowY: 'auto',}}>
+      <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+      <div className="flex items-center justify-between my-7 max-w-[1280px] ">
+        <h1 className="text-3xl font-bold">Update a Post</h1>
+        <Button type="submit" className="bg-purple-600 w-36 h-12 hover:bg-purple-700">
+          Update Post
+        </Button>
+      </div>
+        <div className="flex gap-9">
+          {/* Left Column: Inputs stacked */}
+          <div className="flex flex-col gap-4 flex-1 max-w-[600px]">
             <Select
               value={formData.category || ''}
-              onValueChange={(value) =>
-                setFormData({ ...formData, category: value })
-              }
+              onValueChange={(value) => setFormData({ ...formData, category: value })}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full max-w-[180px]">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
@@ -174,23 +239,30 @@ export default function UpdatePost() {
                 ))}
               </SelectContent>
             </Select>
-          </div>
 
-          <div className="flex gap-4 items-center justify-between rounded-md">
+            <Input
+              type="text"
+              placeholder="Title"
+              required
+              value={formData.title || ''}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            />
+
             <Input
               type="file"
               accept="image/*"
               onChange={(e) => setFile(e.target.files[0])}
             />
+
             <Button
               type="button"
               variant="outline"
               disabled={!!imageUploadProgress}
               onClick={handleUploadImage}
-              className="w-36 h-12 flex items-center justify-center"
+              className="w-36 h-12 bg-purple-600 text-white"
             >
               {imageUploadProgress ? (
-                <div style={{ width: 50, height: 50 }}>
+                <div style={{ width: 40, height: 40 }}>
                   <CircularProgressbar
                     value={imageUploadProgress}
                     text={`${imageUploadProgress}%`}
@@ -207,49 +279,40 @@ export default function UpdatePost() {
             </Button>
           </div>
 
-          {imageUploadError && (
-            <Alert variant="destructive">
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{imageUploadError}</AlertDescription>
-            </Alert>
-          )}
+          {/* Right Column: Image preview */}
+          <div className="flex-1 max-w-[600px] flex items-center justify-center border rounded-md min-h-[200px]">
+            {formData.image ? (
+              <img
+                src={formData.image}
+                alt="upload"
+                className="max-h-[200px] max-w-full object-contain rounded-md"
+              />
+            ) : (
+              <p className="text-gray-500">No image uploaded yet</p>
+            )}
+          </div>
+        </div>
 
-          {formData.image && (
-            <img
-              src={formData.image}
-              alt="upload"
-              className="w-full h-72 object-cover"
-            />
-          )}
+        {/* Editor Toolbar */}
+        <EditorToolbar editor={editor} />
 
-          <ReactQuill
-            theme="snow"
-            placeholder="Write something..."
-            className="h-72 mb-12"
-            value={formData.content || ''}
-            onChange={(value) =>
-              setFormData({ ...formData, content: value })
-            }
-          />
+        {/* Editor with fixed height and scroll */}
+        <div
+          className="border rounded-md p-2 no-scrollbar"
+          style={{ height: '400px', overflowY: 'auto' }}
+        >
+          <EditorContent editor={editor} />
+        </div>
 
-          <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
-            Update
-          </Button>
+        
+        {publishError && (
+          <Alert variant="destructive" className="mt-5">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{publishError}</AlertDescription>
+          </Alert>
+        )}
+      </form>
 
-          {publishError && (
-            <Alert variant="destructive" className="mt-5">
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{publishError}</AlertDescription>
-            </Alert>
-          )}
-        </form>
-      </div>
-    );
-  }
-
-  return (
-    <h1 className="text-center text-3xl my-7 font-semibold min-h-screen">
-      You need to be an admin to update a post
-    </h1>
+    </div>
   );
 }

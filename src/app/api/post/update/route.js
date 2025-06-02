@@ -2,6 +2,7 @@ import Post from '../../../../lib/models/post.model.js';
 import { connect } from '../../../../lib/mongodb/mongoose.js';
 import { currentUser } from '@clerk/nextjs/server';
 import mongoose from 'mongoose';
+import slugify from 'slugify';
 
 export const PUT = async (req) => {
   const user = await currentUser();
@@ -24,7 +25,10 @@ export const PUT = async (req) => {
       return new Response('Unauthorized', { status: 401 });
     }
 
-    // Update the post
+    // Generate new slug from updated title
+    const newSlug = slugify(data.title, { lower: true, strict: true });
+
+    // Update the post, including new slug
     const updatedPost = await Post.findByIdAndUpdate(
       data.postId,
       {
@@ -34,6 +38,7 @@ export const PUT = async (req) => {
           category: data.category,
           image: data.image,
           author: data.author,
+          slug: newSlug,
         },
       },
       { new: true }
