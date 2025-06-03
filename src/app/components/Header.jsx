@@ -62,13 +62,17 @@ export default function Header() {
           {/* Theme Toggle */}
           {mounted && (
             <Button
-              variant="ghost"
-              className="border border-gray-300 dark:border-gray-600"
-              size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            >
-              {theme === 'dark' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
-            </Button>
+            variant="ghost"
+            className="border border-gray-300 dark:border-gray-600"
+            size="icon"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          >
+            <span className="sr-only">
+              Switch to {theme === 'dark' ? 'light' : 'dark'} mode
+            </span>
+            {theme === 'dark' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
+          </Button>
+          
           )}
 
           {/* Auth Buttons */}
