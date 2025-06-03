@@ -83,7 +83,8 @@ export default function DashPosts() {
     }
   };
 
-
+  const truncate = (str, maxLength) => 
+    str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
   return (
     <div className="flex justify-center w-[1180px] p-6 bg-white text-black dark:bg-black dark:text-white">
       <div className="w-full min-w-8xl relative">
@@ -132,7 +133,7 @@ export default function DashPosts() {
                       <Link href={`/post/${post.slug}`} className="relative w-28 h-16 block">
                         <Image
                           src={post.image || '/default-image.jpg'}
-                          alt={post.title || 'Post image'}
+                          alt={truncate(post.title, 30) || 'Post image'}
                           fill
                           loading="lazy" 
                           className="object-cover rounded-md"

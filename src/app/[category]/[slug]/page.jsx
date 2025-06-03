@@ -66,6 +66,10 @@ export default async function PostPage({ params }) {
       .join(' ');
   }
 
+  const truncate = (str, maxLength) =>
+    str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
+
+
   return (
     <div className="flex flex-col min-h-screen lg:m-auto">
       {/* Content Wrapper */}
@@ -106,9 +110,9 @@ export default async function PostPage({ params }) {
             <div className="my-4 relative w-full max-h-[500px] aspect-video">
               <Image
                 src={post?.image || '/default-image.jpg'}
-                alt={post?.title || 'Post image'}
+                alt={truncate(post.title, 10) || 'Post image'}
                 fill
-                loading="lazy" 
+                loading="lazy"
                 className="object-cover rounded-lg shadow"
                 sizes="100vw"
               />

@@ -2,6 +2,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Sidepost({ post }) {
+
+  const truncate = (str, maxLength) => 
+    str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
   return (
     <Link
       href={`/${post.category}/${post.slug}`}
@@ -19,7 +22,7 @@ export default function Sidepost({ post }) {
       <div className="w-24 h-16 relative flex-shrink-0">
         <Image
           src={post.image || '/default-image.jpg'}
-          alt={post.title}
+          alt={truncate(post.title, 30)} 
           fill
           loading="lazy" 
           sizes="96px" // since w-24 is 96px

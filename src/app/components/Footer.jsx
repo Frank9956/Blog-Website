@@ -29,7 +29,7 @@ export default function FooterCom() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm">
             <div>
-              <h4 className="font-semibold mb-2">About</h4>
+              <h1 className="font-semibold mb-2">About</h1>
               <ul className="space-y-1">
                 <li>
                   <Link
@@ -46,7 +46,7 @@ export default function FooterCom() {
             </div>
 
             <div>
-              <h4 className="font-semibold mb-2">Follow us</h4>
+              <h1 className="font-semibold mb-2">Follow us</h1>
               <ul className="space-y-1">
                 <li>
                   <Link
@@ -82,7 +82,7 @@ export default function FooterCom() {
             </div>
 
             <div>
-              <h4 className="font-semibold mb-2">Legal</h4>
+              <h1 className="font-semibold mb-2">Legal</h1>
               <ul className="space-y-1">
                 <li>
                   <Link href="#" className="hover:underline">

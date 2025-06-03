@@ -3,7 +3,8 @@ import Image from 'next/image';
 
 export default function PostCard({ post }) {
   const formattedDate = new Date(post.createdAt).toLocaleDateString();
-
+  const truncate = (str, maxLength) => 
+    str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
   return (
     <Link
       href={`/${post.category}/${post.slug}`}
@@ -25,7 +26,7 @@ export default function PostCard({ post }) {
       >
         <Image
           src={post.image || '/default-image.jpg'}
-          alt={post.title}
+          alt={truncate(post.title, 30)} 
           fill
           loading="lazy" // 👈 explicitly added
           sizes="(min-width: 1024px) 256px, (min-width: 640px) 128px, 128px"
