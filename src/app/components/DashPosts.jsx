@@ -134,6 +134,7 @@ export default function DashPosts() {
                           src={post.image || '/default-image.jpg'}
                           alt={post.title || 'Post image'}
                           fill
+                          loading="lazy" 
                           className="object-cover rounded-md"
                           sizes="112px" // 28 * 4 = 112px width
                         />

@@ -108,6 +108,7 @@ export default async function PostPage({ params }) {
                 src={post?.image || '/default-image.jpg'}
                 alt={post?.title || 'Post image'}
                 fill
+                loading="lazy" 
                 className="object-cover rounded-lg shadow"
                 sizes="100vw"
                 priority

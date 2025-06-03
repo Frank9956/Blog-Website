@@ -21,6 +21,7 @@ export default function Sidepost({ post }) {
           src={post.image || '/default-image.jpg'}
           alt={post.title}
           fill
+          loading="lazy" 
           sizes="96px" // since w-24 is 96px
           className="object-cover rounded-sm transition-transform duration-300 group-hover:scale-105"
         />

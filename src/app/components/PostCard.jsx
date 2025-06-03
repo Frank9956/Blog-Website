@@ -10,7 +10,7 @@ export default function PostCard({ post }) {
       className="flex w-full border rounded-lg overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 
         hover:border-orange-500 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 
         bg-white dark:bg-black no-underline"
-      >
+    >
       {/* Left - Text */}
       <div className="flex-1 p-4 flex flex-col justify-between text-black dark:text-white">
         <p className="text-base font-semibold line-clamp-3">{post.title}</p>
@@ -27,6 +27,7 @@ export default function PostCard({ post }) {
           src={post.image || '/default-image.jpg'}
           alt={post.title}
           fill
+          loading="lazy" // 👈 explicitly added
           sizes="(min-width: 1024px) 256px, (min-width: 640px) 128px, 128px"
           className="object-cover p-2 rounded-sm"
         />

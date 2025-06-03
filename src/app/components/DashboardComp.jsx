@@ -226,6 +226,7 @@ export default function DashboardComp() {
                         src={post.image || '/default-image.jpg'}
                         alt="post"
                         fill
+                        loading="lazy" 
                         className="object-cover"
                         sizes="80px"
                       />
