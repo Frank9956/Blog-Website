@@ -111,7 +111,6 @@ export default async function PostPage({ params }) {
                 loading="lazy" 
                 className="object-cover rounded-lg shadow"
                 sizes="100vw"
-                priority
               />
             </div>
 
