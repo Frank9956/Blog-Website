@@ -126,6 +126,37 @@ export default function UpdatePost() {
     }
   }, [postId, user?.publicMetadata?.isAdmin, isSignedIn, editor]);
 
+
+   // --- Updated code for unsaved changes warning (removed router.beforePopState) ---
+   useEffect(() => {
+    const hasUnsavedChanges = () => {
+      return (
+        formData.title ||
+        formData.content ||
+        formData.category ||
+        formData.author ||
+        formData.image ||
+        file !== null
+      )
+    }
+
+    const handleWindowClose = (e) => {
+      if (!hasUnsavedChanges()) return
+
+      e.preventDefault()
+      e.returnValue = ''
+      return ''
+    }
+
+    window.addEventListener('beforeunload', handleWindowClose)
+
+    // Removed router.beforePopState because it's not supported in next/navigation
+
+    return () => {
+      window.removeEventListener('beforeunload', handleWindowClose)
+    }
+  }, [formData, file])
+  
   useEffect(() => {
     const fetchCategories = async () => {
       try {

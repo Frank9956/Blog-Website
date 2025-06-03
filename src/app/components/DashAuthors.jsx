@@ -115,9 +115,9 @@ export default function DashauthorsList() {
   }
 
   return (
-    <div className="p-6 w-full flex flex-col lg:flex-row gap-10">
+    <div className="p-6 min-w-[1180px] flex flex-col lg:flex-row gap-10">
       {/* Form Section */}
-      <div className="w-full lg:w-1/2">
+      <div className="w-[640px]">
         <h1 className="text-2xl font-semibold mb-6">{editMode ? 'Edit Author' : 'Manage Authors'}</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-8">
           <input
@@ -145,7 +145,7 @@ export default function DashauthorsList() {
       </div>
 
       {/* List Section */}
-      <div className="w-full lg:w-1/2 pt-14">
+      <div className="w-[540px] pt-14">
         <div className="max-h-[calc(100vh-200px)] overflow-y-auto space-y-3 pr-2 no-scrollbar">
           {authorsList.length > 0 ? (
             authorsList.map((author) => (

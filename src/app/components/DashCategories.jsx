@@ -105,9 +105,9 @@ export default function DashCategories() {
     );
   }
   return (
-    <div className="p-6 w-full lg:w-[full] flex flex-col lg:flex-row gap-10">
+    <div className="p-6 min-w-[1180px] flex flex-col lg:flex-row gap-10">
       {/* Form Section */}
-      <div className="w-full lg:w-1/2">
+      <div className="w-[640px]">
         <h1 className="text-2xl font-semibold mb-6">{editMode ? 'Edit Category' : 'Manage Categories'}</h1>
   
         {/* Add or Edit Category Form */}
@@ -144,7 +144,7 @@ export default function DashCategories() {
       </div>
   
       {/* Categories List */}
-      <div className="w-full lg:w-1/2 pt-10 lg:pt-14">
+      <div className="w-[540px] pt-10 lg:pt-14">
         <div className="max-h-[calc(100vh-200px)] overflow-y-auto space-y-3 pr-2 no-scrollbar">
           {categories.length > 0 ? (
             categories.map((cat) => (

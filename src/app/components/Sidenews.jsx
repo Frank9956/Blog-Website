@@ -20,10 +20,6 @@ async function fetchPosts(limit = 4) {
 }
 
 export default async function AllPosts({ limit = 4 }) {
- 
-
-  
-
   const posts = await fetchPosts(limit);
 
   if (!posts.length) return <div className="text-center text-xl">No posts found.</div>;

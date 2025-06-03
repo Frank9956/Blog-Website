@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Sidepost({ post }) {
   return (
@@ -15,11 +16,13 @@ export default function Sidepost({ post }) {
       </div>
 
       {/* Image */}
-      <div className="w-24 h-16 flex-shrink-0">
-        <img
+      <div className="w-24 h-16 relative flex-shrink-0">
+        <Image
           src={post.image || '/default-image.jpg'}
           alt={post.title}
-          className="w-full h-full object-cover rounded-sm transition-transform duration-300 group-hover:scale-105"
+          fill
+          sizes="96px" // since w-24 is 96px
+          className="object-cover rounded-sm transition-transform duration-300 group-hover:scale-105"
         />
       </div>
     </Link>

@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { HiArrowNarrowUp, HiDocumentText, HiOutlineUserGroup } from 'react-icons/hi';
+import { HiArrowNarrowUp, HiDocumentText, HiOutlineUserGroup, HiTag } from 'react-icons/hi'; // <-- Added HiTag
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 
@@ -15,6 +16,12 @@ export default function DashboardComp() {
   const [totalPosts, setTotalPosts] = useState(0);
   const [lastMonthUsers, setLastMonthUsers] = useState(0);
   const [lastMonthPosts, setLastMonthPosts] = useState(0);
+
+  // New states for categories
+  const [categories, setCategories] = useState([]);
+  const [totalCategories, setTotalCategories] = useState(0);
+  const [lastMonthCategories, setLastMonthCategories] = useState(0);
+
   const { user } = useUser();
   const [mounted, setMounted] = useState(false);
 
@@ -59,11 +66,27 @@ export default function DashboardComp() {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/category');
+        const data = await res.json();
+        if (res.ok) {
+          setCategories(data.categories || data);
+          setTotalCategories(data.totalCategories ?? data.length);
+          setLastMonthCategories(data.lastMonthCategories ?? 0);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
     if (user?.publicMetadata?.isAdmin) {
-      fetchUsers();
+      fetchCategories();
       fetchPosts();
+      fetchUsers();
     }
   }, [user]);
+
 
   if (!user?.publicMetadata?.isAdmin) {
     return (
@@ -76,11 +99,11 @@ export default function DashboardComp() {
   if (!mounted) return null;
 
   return (
-    <div className="p-6 w-full bg-white text-black dark:bg-black dark:text-white">
+    <div className="p-6 w-full min-w-[1180px] mx-auto bg-white text-black dark:bg-black dark:text-white">
       {/* Stat Cards */}
       <div className="flex-wrap flex gap-6 justify-start">
         {/* Users Card */}
-        <div className="flex flex-col p-6 bg-gray-100 dark:bg-gray-900 gap-4 md:w-72 w-full rounded-2xl shadow-sm border border-gray-300 dark:border-gray-700">
+        <div className="flex flex-col p-6 bg-green-300 dark:bg-gray-900 gap-4 md:w-72 w-full rounded-2xl shadow-sm border border-gray-300 dark:border-gray-700">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-gray-600 dark:text-gray-400 text-lg uppercase">Total Users</h3>
@@ -97,8 +120,26 @@ export default function DashboardComp() {
           </div>
         </div>
 
+        {/* Categories Card */}
+        <div className="flex flex-col p-6 bg-blue-300 dark:bg-gray-900 gap-4 md:w-72 w-full rounded-2xl shadow-sm border border-gray-300 dark:border-gray-700">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-gray-600 dark:text-gray-400 text-lg uppercase">Total Categories</h3>
+              <p className="text-4xl font-semibold">{totalCategories}</p>
+            </div>
+            <HiTag className="bg-gray-300 dark:bg-gray-700 text-black dark:text-white rounded-full text-5xl p-3 shadow-sm" />
+          </div>
+          <div className="flex gap-2 text-lg">
+            <span className="text-gray-700 dark:text-gray-300 flex items-center">
+              <HiArrowNarrowUp className="mr-1" />
+              {lastMonthCategories}
+            </span>
+            <span className="text-gray-500">Last month</span>
+          </div>
+        </div>
+
         {/* Posts Card */}
-        <div className="flex flex-col p-6 bg-gray-100 dark:bg-gray-900 gap-4 md:w-72 w-full rounded-2xl shadow-sm border border-gray-300 dark:border-gray-700">
+        <div className="flex flex-col p-6 bg-red-300 dark:bg-gray-900 gap-4 md:w-72 w-full rounded-2xl shadow-sm border border-gray-300 dark:border-gray-700">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-gray-600 dark:text-gray-400 text-lg uppercase">Total Posts</h3>
@@ -180,11 +221,15 @@ export default function DashboardComp() {
               {posts.map((post) => (
                 <TableRow key={post._id}>
                   <TableCell>
-                    <img
-                      src={post.image}
-                      alt="post"
-                      className="w-20 h-14 rounded-md bg-gray-300 dark:bg-gray-700"
-                    />
+                    <div className="relative w-20 h-14 rounded-md overflow-hidden bg-gray-300 dark:bg-gray-700">
+                      <Image
+                        src={post.image || '/default-image.jpg'}
+                        alt="post"
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                    </div>
                   </TableCell>
                   <TableCell className="text-lg max-w-[280px] truncate">{post.title}</TableCell>
                   <TableCell className="text-lg">{post.category}</TableCell>

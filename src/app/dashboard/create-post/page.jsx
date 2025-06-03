@@ -105,6 +105,37 @@ export default function CreatePostPage() {
     fetchAuthors()
   }, [])
 
+  // --- Updated code for unsaved changes warning (removed router.beforePopState) ---
+  useEffect(() => {
+    const hasUnsavedChanges = () => {
+      return (
+        formData.title ||
+        formData.content ||
+        formData.category ||
+        formData.author ||
+        formData.image ||
+        file !== null
+      )
+    }
+
+    const handleWindowClose = (e) => {
+      if (!hasUnsavedChanges()) return
+
+      e.preventDefault()
+      e.returnValue = ''
+      return ''
+    }
+
+    window.addEventListener('beforeunload', handleWindowClose)
+
+    // Removed router.beforePopState because it's not supported in next/navigation
+
+    return () => {
+      window.removeEventListener('beforeunload', handleWindowClose)
+    }
+  }, [formData, file])
+  // --- End updated code ---
+
   const handleUploadImage = async () => {
     if (!file) return setImageUploadError('Please select an image')
 
@@ -165,128 +196,212 @@ export default function CreatePostPage() {
     )
 
   return (
-    <div className="p-4 max-w-3xl mx-auto min-h-screen">
-      <h1 className="text-center text-3xl my-7 font-semibold">Create a Post</h1>
+    <div
+      className="mx-auto p-3"
+      style={{ minWidth: '1280px', height: 'calc(100vh - 50px)', overflowY: 'auto' }}
+    >
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          placeholder="Title"
-          required
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        />
-
-        <div className="flex flex-col gap-4 sm:flex-row justify-between">
-          <Select onValueChange={(value) => setFormData({ ...formData, category: value })}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat._id} value={cat.slug}>
-                  {cat.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select onValueChange={(value) => setFormData({ ...formData, author: value })}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select an author" />
-            </SelectTrigger>
-            <SelectContent>
-              {authors.map((a) => (
-                <SelectItem key={a._id} value={a.slug}>
-                  {a.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex gap-4 items-center">
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-          />
-          <Button
-            type="button"
-            onClick={handleUploadImage}
-            disabled={!!imageUploadProgress}
-            className="w-36 h-12"
-          >
-            {imageUploadProgress ? (
-              <div style={{ width: 50, height: 50 }}>
-                <CircularProgressbar
-                  value={imageUploadProgress}
-                  text={`${imageUploadProgress}%`}
-                  styles={{
-                    path: { stroke: '#f97316' },
-                    text: { fill: '#f97316' },
-                  }}
-                />
-              </div>
-            ) : (
-              'Upload Image'
-            )}
+        {/* Header: Title + Submit Button */}
+        <div className="flex items-center justify-between my-7 max-w-[1280px]">
+          <h1 className="text-3xl font-bold">Create a Post</h1>
+          <Button type="submit" className="bg-purple-600 w-36 h-12 hover:bg-purple-700">
+            Publish Post
           </Button>
         </div>
 
-        {imageUploadError && (
-          <Alert variant="destructive">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{imageUploadError}</AlertDescription>
-          </Alert>
-        )}
+        <div className="flex gap-9">
+          {/* Left Column */}
+          <div className="flex flex-col gap-4 flex-1 max-w-[600px]">
+            {/* Category & Author */}
+            <div className="flex gap-4">
+              <Select onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <SelectTrigger className="w-full max-w-[180px]">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat._id} value={cat.slug}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-        {formData.image && (
-          <img
-            src={formData.image}
-            alt="Uploaded"
-            className="w-full h-72 object-cover rounded-md"
-          />
-        )}
+              <Select onValueChange={(value) => setFormData({ ...formData, author: value })}>
+                <SelectTrigger className="w-full max-w-[180px]">
+                  <SelectValue placeholder="Select author" />
+                </SelectTrigger>
+                <SelectContent>
+                  {authors.map((a) => (
+                    <SelectItem key={a._id} value={a.slug}>
+                      {a.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Title Input */}
+            <Input
+              type="text"
+              placeholder="Title"
+              required
+              value={formData.title || ''}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            />
+
+            {/* File Upload */}
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+            />
+
+            {/* Upload Button with Progress */}
+            <Button
+              type="button"
+              variant="outline"
+              disabled={!!imageUploadProgress}
+              onClick={handleUploadImage}
+              className="w-36 h-12 bg-purple-600 text-white"
+            >
+              {imageUploadProgress ? (
+                <div style={{ width: 40, height: 40 }}>
+                  <CircularProgressbar
+                    value={imageUploadProgress}
+                    text={`${imageUploadProgress}%`}
+                    styles={{
+                      root: { width: '100%', height: '100%' },
+                      path: { stroke: '#f97316' },
+                      text: { fontSize: '18px', fill: '#f97316' },
+                    }}
+                  />
+                </div>
+              ) : (
+                'Upload Image'
+              )}
+            </Button>
+
+            {/* Error Alert */}
+            {imageUploadError && (
+              <Alert variant="destructive">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{imageUploadError}</AlertDescription>
+              </Alert>
+            )}
+          </div>
+
+          {/* Right Column: Image Preview */}
+          <div className="flex-1 max-w-[600px] flex items-center justify-center border rounded-md min-h-[200px]">
+            {formData.image ? (
+              <img
+                src={formData.image}
+                alt="Uploaded"
+                className="object-contain max-h-72 rounded-md"
+              />
+            ) : (
+              <p className="text-gray-500">No image uploaded yet</p>
+            )}
+          </div>
+        </div>
 
         {/* --- Tiptap Editor Section --- */}
         <div className="border rounded-md shadow-sm">
           {/* Toolbar */}
           <div className="flex flex-wrap gap-2 p-2 border-b bg-white rounded-t-md">
-            <button onClick={() => editor?.chain().focus().toggleBold().run()} className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive('bold') ? 'bg-gray-200' : ''}`}><Bold size={16} /></button>
-            <button onClick={() => editor?.chain().focus().toggleItalic().run()} className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive('italic') ? 'bg-gray-200' : ''}`}><Italic size={16} /></button>
-            <button onClick={() => editor?.chain().focus().toggleUnderline().run()} className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive('underline') ? 'bg-gray-200' : ''}`}><UnderlineIcon size={16} /></button>
-            <button onClick={() => {
-              const url = prompt('Enter link URL')
-              if (url) editor?.chain().focus().setLink({ href: url }).run()
-            }} className="p-2 rounded hover:bg-gray-100"><LinkIcon size={16} /></button>
-            <button onClick={() => editor?.chain().focus().unsetLink().run()} className="p-2 rounded hover:bg-gray-100"><Unlink size={16} /></button>
-            <button onClick={() => {
-              const url = prompt('Enter image URL')
-              if (url) editor?.chain().focus().setImage({ src: url }).run()
-            }} className="p-2 rounded hover:bg-gray-100"><ImageIcon size={16} /></button>
-            <button onClick={() => editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} className="p-2 rounded hover:bg-gray-100"><TableIcon size={16} /></button>
+            <button
+              onClick={() => editor?.chain().focus().toggleBold().run()}
+              type="button"
+              className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive('bold') ? 'bg-gray-200' : ''}`}
+            >
+              <Bold size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().toggleItalic().run()}
+              type="button"
+              className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive('italic') ? 'bg-gray-200' : ''}`}
+            >
+              <Italic size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().toggleUnderline().run()}
+              type="button"
+              className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive('underline') ? 'bg-gray-200' : ''}`}
+            >
+              <UnderlineIcon size={16} />
+            </button>
 
-            {/* Alignment buttons */}
-            <button onClick={() => editor?.chain().focus().setTextAlign('left').run()} className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : ''}`}><AlignLeft size={16} /></button>
-            <button onClick={() => editor?.chain().focus().setTextAlign('center').run()} className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : ''}`}><AlignCenter size={16} /></button>
-            <button onClick={() => editor?.chain().focus().setTextAlign('right').run()} className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : ''}`}><AlignRight size={16} /></button>
-            <button onClick={() => editor?.chain().focus().setTextAlign('justify').run()} className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : ''}`}><AlignJustify size={16} /></button>
+            <button
+              onClick={() => editor?.chain().focus().unsetLink().run()}
+              type="button"
+              disabled={!editor?.isActive('link')}
+              className="p-2 rounded hover:bg-gray-100"
+            >
+              <Unlink size={16} />
+            </button>
+
+            <button
+              onClick={() => {
+                const url = prompt('Enter URL')
+                if (url) {
+                  editor?.chain().focus().setLink({ href: url }).run()
+                }
+              }}
+              type="button"
+              className="p-2 rounded hover:bg-gray-100"
+            >
+              <LinkIcon size={16} />
+            </button>
+
+            <button
+              onClick={() => {
+                const url = prompt('Enter image URL')
+                if (url) {
+                  editor?.chain().focus().setImage({ src: url }).run()
+                }
+              }}
+              type="button"
+              className="p-2 rounded hover:bg-gray-100"
+            >
+              <ImageIcon size={16} />
+            </button>
+
+            <button
+              onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+              type="button"
+              className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : ''}`}
+            >
+              <AlignLeft size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+              type="button"
+              className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : ''}`}
+            >
+              <AlignCenter size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+              type="button"
+              className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : ''}`}
+            >
+              <AlignRight size={16} />
+            </button>
+            <button
+              onClick={() => editor?.chain().focus().setTextAlign('justify').run()}
+              type="button"
+              className={`p-2 rounded hover:bg-gray-100 ${editor?.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : ''}`}
+            >
+              <AlignJustify size={16} />
+            </button>
           </div>
 
-          <EditorContent
-            editor={editor}
-            className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl p-4 min-h-[200px] focus:outline-none
-              [&_table]:table [&_th]:border [&_td]:border 
-              [&_th]:px-2 [&_td]:px-2 [&_th]:py-1 [&_td]:py-1 
-              [&_table]:border [&_table]:border-collapse"
-          />
+          {/* Editor Content */}
+          <EditorContent editor={editor} className="min-h-[250px] p-3" />
         </div>
 
-        <Button type="submit" className="w-full">
-          Publish
-        </Button>
-
         {publishError && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="mt-4">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{publishError}</AlertDescription>
           </Alert>

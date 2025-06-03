@@ -71,13 +71,6 @@ export default function DashSidebar() {
           </Link>
         );
       })}
-
-      <div className="mt-auto">
-        <div className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-muted cursor-pointer transition-all">
-          <HiArrowSmRight className="h-5 w-5" />
-          <SignOutButton />
-        </div>
-      </div>
     </aside>
   );
 }

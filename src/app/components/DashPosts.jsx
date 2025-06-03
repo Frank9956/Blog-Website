@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
+import Image from 'next/image';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import {
   Dialog,
@@ -84,7 +85,7 @@ export default function DashPosts() {
 
 
   return (
-    <div className="flex justify-center w-full p-6 bg-white text-black dark:bg-black dark:text-white">
+    <div className="flex justify-center w-[1180px] p-6 bg-white text-black dark:bg-black dark:text-white">
       <div className="w-full min-w-8xl relative">
         {/* Button Container */}
         <div className="flex justify-between items-center">
@@ -111,16 +112,16 @@ export default function DashPosts() {
           </div>
         ) : userPosts.length > 0 ? (
           <div className="mt-5 overflow-x-auto max-h-[600px] overflow-y-auto border rounded-md no-scrollbar">
-            <table className="min-w-full text-base divide-y divide-gray-200 dark:divide-gray-700">              
+            <table className="min-w-full text-base divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-200 dark:bg-gray-800">
-              <tr>
-                {['Date', 'Image', 'Title', 'Category', 'Author', 'Delete', 'Edit'].map((heading) => (
-                  <th key={heading} className="px-4 py-4 text-left font-semibold text-black dark:text-white">
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+                <tr>
+                  {['Date', 'Image', 'Title', 'Category', 'Author', 'Delete', 'Edit'].map((heading) => (
+                    <th key={heading} className="px-4 py-4 text-left font-semibold text-black dark:text-white">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
               <tbody className="bg-white dark:bg-black divide-y divide-gray-200 dark:divide-gray-800">
                 {userPosts.map((post) => (
                   <tr key={post._id} className="hover:bg-gray-100 dark:hover:bg-gray-900 transition">
@@ -128,11 +129,13 @@ export default function DashPosts() {
                       {new Date(post.updatedAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-4">
-                      <Link href={`/post/${post.slug}`}>
-                        <img
-                          src={post.image}
-                          alt={post.title}
-                          className="w-28 h-16 object-cover rounded-md"
+                      <Link href={`/post/${post.slug}`} className="relative w-28 h-16 block">
+                        <Image
+                          src={post.image || '/default-image.jpg'}
+                          alt={post.title || 'Post image'}
+                          fill
+                          className="object-cover rounded-md"
+                          sizes="112px" // 28 * 4 = 112px width
                         />
                       </Link>
                     </td>

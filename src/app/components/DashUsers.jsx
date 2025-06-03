@@ -84,7 +84,7 @@ export default function DashUsers() {
   }
 
   return (
-    <div className="overflow-x-auto md:mx-auto p-6 scrollbar-none dark:bg-black dark:text-white">
+    <div className="overflow-x-auto md:mx-auto min-w-[1180px] p-6 scrollbar-none dark:bg-black dark:text-white">
       <div className="flex justify-between items-center mb-4">
         <span className="text-2xl font-semibold text-black dark:text-white">
           Manage Users
@@ -92,8 +92,8 @@ export default function DashUsers() {
       </div>
   
       {user?.publicMetadata?.isAdmin && users.length > 0 ? (
-        <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
-          <Table className="shadow-md dark:bg-black dark:border-gray-700">
+        <div className="max-h-[calc(100vh-200px)] overflow-y-auto rounded-md">
+          <Table className="shadow-md dark:bg-black dark:border-gray-700 ">
             {/* Table Header with Sticky Position */}
             <TableHeader className="sticky top-0 z-10 bg-gray-200 dark:bg-gray-800">
               <TableRow>

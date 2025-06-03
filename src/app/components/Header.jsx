@@ -76,7 +76,7 @@ export default function Header() {
           {/* Auth Buttons */}
           <SignedIn>
             <UserButton
-              userProfileUrl="/dashboard?tab=profile"
+              userProfileUrl="/dashboard?tab=dash"
               appearance={{ elements: { userProfileAvatar: 'w-10 h-10' } }}
             />
           </SignedIn>

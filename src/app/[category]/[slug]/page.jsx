@@ -1,5 +1,5 @@
 import MoreNews from '@/app/components/MoreNews';
-import { Button } from 'flowbite-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import CategoryWrapper from '@/app/components/CategoryWrapper';
 import Sidenews from '@/app/components/Sidenews';
@@ -59,6 +59,13 @@ export default async function PostPage({ params }) {
     );
   }
 
+  function formatCategory(slug) {
+    return slug
+      ?.split('-')
+      .map(word => word.toUpperCase())
+      .join(' ');
+  }
+
   return (
     <div className="flex flex-col min-h-screen lg:m-auto">
       {/* Content Wrapper */}
@@ -72,23 +79,38 @@ export default async function PostPage({ params }) {
 
           {/* Main Content - Scrollable */}
           <main className="flex-1 px-2 sm:px-4 lg:px-10 py-6 overflow-y-auto h-[calc(100vh-60px)] no-scrollbar">
+            <nav className="text-sm text-gray-500 mb-4">
+              <ul className="flex items-center gap-1 flex-wrap">
+                <li>
+                  <Link href="/" className="hover:underline font-medium text-gray-800 uppercase">Home</Link>
+                </li>
+                <li className="mx-1 text-gray-400">{'>'}</li>
+                <li>
+                  <Link
+                    href={`/${post?.category}`} className="hover:underline text-gray-800 font-medium">
+                    {formatCategory(post?.category)}
+                  </Link>
+
+                </li>
+                <li className="mx-1 text-gray-400">{'>'}</li>
+                <li className="text-orange-600 font-medium truncate max-w-[200px]">
+                  {post?.title}
+                </li>
+              </ul>
+            </nav>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
               {post?.title}
             </h1>
 
-            <div className="my-4">
-              <Link href={`/${post.category}`}>
-                <Button color="gray" pill size="xs">
-                  {post?.category}
-                </Button>
-              </Link>
-            </div>
 
-            <div className="my-4">
-              <img
+            <div className="my-4 relative w-full max-h-[500px] aspect-video">
+              <Image
                 src={post?.image || '/default-image.jpg'}
-                alt={post?.title}
-                className="w-full max-h-[500px] object-cover rounded-lg shadow"
+                alt={post?.title || 'Post image'}
+                fill
+                className="object-cover rounded-lg shadow"
+                sizes="100vw"
+                priority
               />
             </div>
 
