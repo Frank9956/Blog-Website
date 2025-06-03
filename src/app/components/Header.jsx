@@ -3,14 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import { useTheme } from 'next-themes';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
 export default function Header() {
-  const { user } = useUser();
   const path = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -74,20 +72,7 @@ export default function Header() {
           )}
 
           {/* Auth Buttons */}
-          <SignedIn>
-            <UserButton
-              userProfileUrl="/dashboard?tab=dash"
-              appearance={{ elements: { userProfileAvatar: 'w-10 h-10' } }}
-            />
-          </SignedIn>
-
-          <SignedOut>
-            {path.startsWith('/dashboard') && user?.role === 'admin' && (
-              <Link href="/sign-in">
-                <Button variant="outline">Sign In</Button>
-              </Link>
-            )}
-          </SignedOut>
+          
         </div>
       </div>
 

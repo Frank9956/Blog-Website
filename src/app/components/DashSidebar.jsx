@@ -1,19 +1,19 @@
 'use client';
 
 import Link from 'next/link';
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import {
   HiUser,
-  HiArrowSmRight,
   HiDocumentText,
   HiOutlineUserGroup,
   HiChartPie,
 } from 'react-icons/hi';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { SignOutButton, useUser } from '@clerk/nextjs';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils'; // from Shadcn setup
 
 export default function DashSidebar() {
+  const path = usePathname();
   const [tab, setTab] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const searchParams = useSearchParams();
@@ -71,6 +71,22 @@ export default function DashSidebar() {
           </Link>
         );
       })}
+      <div className="mt-3 mx-auto">
+        <SignedIn>
+          <UserButton
+            userProfileUrl="/dashboard?tab=dash"
+            appearance={{ elements: { userProfileAvatar: 'w-30 h-30' } }}
+          />
+        </SignedIn>
+
+        <SignedOut>
+          {path.startsWith('/dashboard') && user?.role === 'admin' && (
+            <Link href="/sign-in">
+              <Button variant="outline">Sign In</Button>
+            </Link>
+          )}
+        </SignedOut>
+      </div>
     </aside>
   );
 }
