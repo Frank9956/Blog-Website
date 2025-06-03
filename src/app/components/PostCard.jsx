@@ -28,7 +28,7 @@ export default function PostCard({ post }) {
           src={post.image || '/default-image.jpg'}
           alt={'Post image'} 
           fill
-          loading="lazy" // 👈 explicitly added
+          priority
           sizes="(min-width: 1024px) 256px, (min-width: 640px) 128px, 128px"
           className="object-cover p-2 rounded-sm"
         />
