@@ -22,7 +22,7 @@ export default function Sidepost({ post }) {
       <div className="w-24 h-16 relative flex-shrink-0">
         <Image
           src={post.image || '/default-image.jpg'}
-          alt={truncate(post.title, 30)} 
+          alt={'Post image'} 
           fill
           loading="lazy" 
           sizes="96px" // since w-24 is 96px

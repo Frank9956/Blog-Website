@@ -26,7 +26,7 @@ export default function PostCard({ post }) {
       >
         <Image
           src={post.image || '/default-image.jpg'}
-          alt={truncate(post.title, 30)} 
+          alt={'Post image'} 
           fill
           loading="lazy" // 👈 explicitly added
           sizes="(min-width: 1024px) 256px, (min-width: 640px) 128px, 128px"
